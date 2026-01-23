@@ -27,6 +27,46 @@ let currentWordData = null;
 let favoriteWords = [];
 let dataUnsubscribers = [];
 
+// DOM Elements
+const elements = {
+  authNav: document.getElementById("authNav"),
+  guestView: document.getElementById("guestView"),
+  userView: document.getElementById("userView"),
+  userAvatar: document.getElementById("userAvatar"),
+  userName: document.getElementById("userName"),
+  logoutBtn: document.getElementById("logoutBtn"),
+
+  showLoginBtn: document.getElementById("showLoginBtn"),
+  showRegisterBtn: document.getElementById("showRegisterBtn"),
+  loginModal: document.getElementById("loginModal"),
+  registerModal: document.getElementById("registerModal"),
+  loginForm: document.getElementById("loginForm"),
+  registerForm: document.getElementById("registerForm"),
+  loginEmail: document.getElementById("loginEmail"),
+  loginPassword: document.getElementById("loginPassword"),
+  regName: document.getElementById("regName"),
+  regEmail: document.getElementById("regEmail"),
+  regPassword: document.getElementById("regPassword"),
+  toRegister: document.getElementById("toRegister"),
+  toLogin: document.getElementById("toLogin"),
+
+  googleLoginBtn: document.getElementById("googleLoginBtn"),
+  githubLoginBtn: document.getElementById("githubLoginBtn"),
+
+  searchInput: document.getElementById("searchInput"),
+  loader: document.getElementById("loader"),
+  errorMsg: document.getElementById("errorMsg"),
+  resultsSection: document.getElementById("resultsSection"),
+  resWord: document.getElementById("resWord"),
+  resPhonetic: document.getElementById("resPhonetic"),
+  resMeanings: document.getElementById("resMeanings"),
+  toggleFavBtn: document.getElementById("toggleFavBtn"),
+
+  historyList: document.getElementById("historyList"),
+  favoritesList: document.getElementById("favoritesList"),
+  wodContent: document.getElementById("wodContent"),
+};
+
 // --- Initialization ---
 
 subscribeToAuthChanges((user) => {
@@ -206,11 +246,17 @@ elements.toggleFavBtn.onclick = async () => {
     elements.loginModal.classList.add("active");
     return;
   }
+  if (!currentWordData) {
+    showToast("Search for a word first!", "info");
+    return;
+  }
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
   if (isFav) {
     await removeFromFavorites(currentUser.uid, currentWordData.word);
+    showToast("Removed from favorites", "info");
   } else {
     await addToFavorites(currentUser.uid, currentWordData);
+    showToast("Added to favorites", "success");
   }
 };
 
