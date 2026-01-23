@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern Dictionary | Learn Every Day</title>
+    <script type="module" crossorigin src="./assets/index-BexgdFqe.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DOu8ZqEn.css">
+  </head>
+  <body>
+    <div class="app-container">
+      <header>
+        <div class="logo">
+          <h1><span>📚</span> Lexicon</h1>
+        </div>
+
+        <nav id="authNav" class="auth-nav">
+          <!-- Guest View -->
+          <div id="guestView" class="auth-nav">
+            <button id="showLoginBtn" class="btn btn-outline">Log In</button>
+            <button id="showRegisterBtn" class="btn btn-primary">
+              Sign Up
+            </button>
+          </div>
+
+          <!-- User View -->
+          <div id="userView" class="user-info hidden">
+            <img id="userAvatar" class="avatar" src="" alt="Profile" />
+            <span id="userName"></span>
+            <button id="logoutBtn" class="btn btn-outline">Logout</button>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <!-- Word of the Day -->
+        <section id="wordOfDay" class="wod-card">
+          <h2>Word of the Day</h2>
+          <div id="wodContent">
+            <p>Loading inspiration...</p>
+          </div>
+        </section>
+
+        <!-- Search -->
+        <section class="search-area">
+          <div class="search-box">
+            <input
+              type="text"
+              id="searchInput"
+              class="search-input"
+              placeholder="Search any word..."
+            />
+            <span class="search-icon">🔍</span>
+          </div>
+        </section>
+
+        <!-- Status Indicators -->
+        <div id="loader" class="hidden">Searching...</div>
+        <div id="errorMsg" class="hidden"></div>
+
+        <!-- Results -->
+        <section id="resultsSection" class="result-card hidden">
+          <div class="word-header">
+            <div class="word-meta">
+              <h2 id="resWord"></h2>
+              <span id="resPhonetic" class="phonetic"></span>
+            </div>
+            <button id="toggleFavBtn" class="btn btn-outline">
+              ⭐ Favorite
+            </button>
+          </div>
+          <div id="resMeanings"></div>
+        </section>
+
+        <!-- History -->
+        <section id="historySection">
+          <h3 class="section-title">⏱️ Recent Searches</h3>
+          <div id="historyList" class="history-grid">
+            <p class="text-muted">Your history will appear here.</p>
+          </div>
+        </section>
+
+        <!-- Favorites -->
+        <section id="favoritesSection">
+          <h3 class="section-title">⭐ Favorites</h3>
+          <div id="favoritesList" class="history-grid">
+            <p class="text-muted">Sign in to save favorites.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>&copy; 2026 Lexicon Dictionary. Powered by Free Dictionary API.</p>
+      </footer>
+    </div>
+
+    <!-- Auth Modals -->
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <h2 class="section-title">Welcome Back</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="loginPassword"
+              class="form-input"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Log In
+          </button>
+        </form>
+        <div
+          style="
+            margin: 1.5rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+          "
+        >
+          OR
+        </div>
+        <div style="display: grid; gap: 0.5rem">
+          <button id="googleLoginBtn" class="btn btn-outline">
+            Sign in with Google
+          </button>
+          <button id="githubLoginBtn" class="btn btn-outline">
+            Sign in with GitHub
+          </button>
+        </div>
+        <p style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem">
+          Don't have an account? <a href="#" id="toRegister">Sign up</a>
+        </p>
+      </div>
+    </div>
+
+    <div id="registerModal" class="modal">
+      <div class="modal-content">
+        <h2 class="section-title">Create Account</h2>
+        <form id="registerForm">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="regName" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="regEmail" class="form-input" required />
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              id="regPassword"
+              class="form-input"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%">
+            Sign Up
+          </button>
+        </form>
+        <p style="margin-top: 1.5rem; text-align: center; font-size: 0.85rem">
+          Already have an account? <a href="#" id="toLogin">Log in</a>
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
