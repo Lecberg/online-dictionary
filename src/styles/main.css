@@ -252,7 +252,66 @@ header {
 }
 
 .hidden {
-  display: none;
+  display: none !important;
+}
+
+/* Translation Styles */
+.translate-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  padding: 0 0.5rem;
+}
+
+.translate-btn:hover {
+  opacity: 1;
+}
+
+.translation-result {
+  margin-top: 0.8rem;
+  padding: 0.8rem 1rem;
+  background-color: #f8fafc;
+  border-left: 3px solid var(--accent);
+  font-size: 1rem;
+  color: var(--primary);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#aiSettingsModal .modal-content {
+  max-width: 500px;
+}
+
+#aiSettingsModal .form-group {
+  margin-bottom: 1rem;
+}
+
+#aiSettingsModal label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.2rem;
+}
+
+#aiSettingsModal select.form-input {
+  background: transparent;
+  cursor: pointer;
 }
 
 footer {

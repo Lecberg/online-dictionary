@@ -8,10 +8,17 @@ export const renderWordResult = (data) => {
             ${meaning.definitions
               .map(
                 (def, i) => `
-                <div class="definition-item">
-                    <p><strong>${i + 1}.</strong> ${def.definition}</p>
+                 <div class="definition-item">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <p><strong>${i + 1}.</strong> ${def.definition}</p>
+                        <button class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" title="Translate with AI">
+                            🪄
+                        </button>
+                    </div>
                     ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}
+                    <div class="translation-result hidden" id="trans-${i}"></div>
                 </div>
+
             `,
               )
               .join("")}

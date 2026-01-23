@@ -13,8 +13,11 @@ import {
   removeFromFavorites,
   listenToFavorites,
   syncHistoryToCloud,
+  saveAIConfig,
+  getAIConfig,
 } from "./services/db";
 import { fetchWordData } from "./services/dictionary";
+import { translateText, AI_PROVIDERS } from "./services/ai";
 import {
   renderWordResult,
   renderHistoryItem,
@@ -27,6 +30,7 @@ let currentUser = null;
 let currentWordData = null;
 let favoriteWords = [];
 let dataUnsubscribers = [];
+let aiConfig = null;
 
 // DOM Elements
 const elements = {
@@ -36,13 +40,18 @@ const elements = {
   userAvatar: document.getElementById("userAvatar"),
   userName: document.getElementById("userName"),
   logoutBtn: document.getElementById("logoutBtn"),
+  showSettingsBtn: document.getElementById("showSettingsBtn"),
 
   showLoginBtn: document.getElementById("showLoginBtn"),
   showRegisterBtn: document.getElementById("showRegisterBtn"),
   loginModal: document.getElementById("loginModal"),
   registerModal: document.getElementById("registerModal"),
+  aiSettingsModal: document.getElementById("aiSettingsModal"),
+
   loginForm: document.getElementById("loginForm"),
   registerForm: document.getElementById("registerForm"),
+  aiSettingsForm: document.getElementById("aiSettingsForm"),
+
   loginEmail: document.getElementById("loginEmail"),
   loginPassword: document.getElementById("loginPassword"),
   regName: document.getElementById("regName"),
@@ -50,6 +59,13 @@ const elements = {
   regPassword: document.getElementById("regPassword"),
   toRegister: document.getElementById("toRegister"),
   toLogin: document.getElementById("toLogin"),
+
+  aiProvider: document.getElementById("aiProvider"),
+  aiApiKey: document.getElementById("aiApiKey"),
+  aiHost: document.getElementById("aiHost"),
+  aiModel: document.getElementById("aiModel"),
+  aiLanguage: document.getElementById("aiLanguage"),
+  closeSettingsBtn: document.getElementById("closeSettingsBtn"),
 
   googleLoginBtn: document.getElementById("googleLoginBtn"),
   githubLoginBtn: document.getElementById("githubLoginBtn"),
@@ -83,8 +99,15 @@ subscribeToAuthChanges((user) => {
     syncHistoryToCloud(user.uid).then(() => {
       setupDataListeners(user.uid);
     });
+    // Load AI Config
+    getAIConfig(user.uid).then((config) => {
+      aiConfig = config;
+    });
   } else {
     setupDataListeners(null);
+    getAIConfig(null).then((config) => {
+      aiConfig = config;
+    });
   }
 });
 
@@ -175,6 +198,37 @@ function displayResults(data) {
     wordData.phonetic || wordData.phonetics?.[0]?.text || "";
   elements.resMeanings.innerHTML = renderWordResult(data);
   elements.resultsSection.classList.remove("hidden");
+
+  // Attach translation listeners
+  document.querySelectorAll(".translate-btn").forEach((btn, i) => {
+    btn.onclick = async () => {
+      const resultDiv = document.getElementById(`trans-${i}`);
+      const originalText = btn.dataset.text;
+
+      if (!aiConfig || !aiConfig.apiKey) {
+        showToast("Please configure AI settings first!", "info");
+        elements.aiSettingsModal.classList.add("active");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "⌛";
+        resultDiv.textContent = "Translating...";
+        resultDiv.classList.remove("hidden");
+
+        const translation = await translateText(originalText, aiConfig);
+        resultDiv.textContent = translation;
+      } catch (err) {
+        showToast(err.message, "error");
+        resultDiv.classList.add("hidden");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "🪄";
+      }
+    };
+  });
+
   updateFavoriteButton();
   window.scrollTo({
     top: elements.resultsSection.offsetTop - 100,
@@ -267,7 +321,52 @@ elements.toggleFavBtn.onclick = async () => {
   }
 };
 
-// --- Word of the Day ---
+// --- AI Settings Logic ---
+
+elements.showSettingsBtn.onclick = () => {
+  if (aiConfig) {
+    elements.aiProvider.value = aiConfig.provider || "openai";
+    elements.aiApiKey.value = ""; // Don't show obfuscated key
+    elements.aiHost.value = aiConfig.host || "";
+    elements.aiModel.value = aiConfig.model || "";
+    elements.aiLanguage.value = aiConfig.targetLanguage || "Spanish";
+  }
+  elements.aiSettingsModal.classList.add("active");
+};
+
+elements.closeSettingsBtn.onclick = () => {
+  elements.aiSettingsModal.classList.remove("active");
+};
+
+elements.aiSettingsForm.onsubmit = async (e) => {
+  e.preventDefault();
+  const config = {
+    provider: elements.aiProvider.value,
+    apiKey: elements.aiApiKey.value,
+    host: elements.aiHost.value,
+    model: elements.aiModel.value,
+    targetLanguage: elements.aiLanguage.value,
+  };
+
+  try {
+    await saveAIConfig(currentUser ? currentUser.uid : null, config);
+    aiConfig = config;
+    showToast("AI Settings saved!", "success");
+    elements.aiSettingsModal.classList.remove("active");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
+
+// Close modals on outside click
+window.addEventListener("click", (e) => {
+  if (e.target === elements.loginModal)
+    elements.loginModal.classList.remove("active");
+  if (e.target === elements.registerModal)
+    elements.registerModal.classList.remove("active");
+  if (e.target === elements.aiSettingsModal)
+    elements.aiSettingsModal.classList.remove("active");
+});
 
 async function initWOD() {
   const WORD_LIST = [

@@ -1,6 +1,7 @@
 import {
   doc,
   setDoc,
+  getDoc,
   deleteDoc,
   collection,
   query,
@@ -16,7 +17,36 @@ import { db } from "./firebase";
  * Local Storage Helpers for Guest Users
  */
 const LOCAL_HISTORY_KEY = "lexicon_history";
+const LOCAL_AI_CONFIG_KEY = "lexicon_ai_config";
 const MAX_HISTORY = 10;
+
+/**
+ * Save AI Configuration
+ */
+export const saveAIConfig = async (uid, config) => {
+  if (!uid) {
+    localStorage.setItem(LOCAL_AI_CONFIG_KEY, JSON.stringify(config));
+    return;
+  }
+  const configRef = doc(db, "users", uid, "settings", "aiConfig");
+  await setDoc(configRef, {
+    ...config,
+    updatedAt: serverTimestamp(),
+  });
+};
+
+/**
+ * Get AI Configuration
+ */
+export const getAIConfig = async (uid) => {
+  if (!uid) {
+    const local = localStorage.getItem(LOCAL_AI_CONFIG_KEY);
+    return local ? JSON.parse(local) : null;
+  }
+  const configRef = doc(db, "users", uid, "settings", "aiConfig");
+  const docSnap = await getDoc(configRef);
+  return docSnap.exists() ? docSnap.data() : null;
+};
 
 const getLocalHistory = () => {
   const data = localStorage.getItem(LOCAL_HISTORY_KEY);
