@@ -1,16 +1,16 @@
 export const renderWordResult = (data) => {
   const wordData = data[0];
-  const meaningsHTML = wordData.meanings
+  return wordData.meanings
     .map(
       (meaning) => `
-        <div style="margin-top: 1.5rem">
-            <h3 style="font-size: 1rem; text-transform: uppercase; color: var(--secondary)">${meaning.partOfSpeech}</h3>
+        <div class="meaning-section">
+            <div class="part-of-speech">${meaning.partOfSpeech}</div>
             ${meaning.definitions
               .map(
                 (def, i) => `
-                <div style="margin: 0.8rem 0; padding-left: 1rem; border-left: 2px solid var(--primary)">
+                <div class="definition-item">
                     <p><strong>${i + 1}.</strong> ${def.definition}</p>
-                    ${def.example ? `<p style="color: var(--text-muted); font-style: italic; font-size: 0.9rem">"${def.example}"</p>` : ""}
+                    ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}
                 </div>
             `,
               )
@@ -19,8 +19,6 @@ export const renderWordResult = (data) => {
     `,
     )
     .join("");
-
-  return meaningsHTML;
 };
 
 export const renderHistoryItem = (item) => {
@@ -32,22 +30,20 @@ export const renderWOD = (wordData) => {
   const definition = word.meanings[0].definitions[0].definition;
 
   return `
-        <div class="wod-word">${word.word}</div>
-        <div class="phonetic" style="color: white; opacity: 0.8; margin-bottom: 1rem">${word.phonetic || ""}</div>
-        <p class="wod-definition">${definition}</p>
-        <button class="btn btn-outline" style="background: white; color: var(--primary); margin-top: 1rem" id="viewWodBtn" data-word="${word.word}">Learn More</button>
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">${word.word}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">${definition}</p>
+        <button class="btn btn-outline" id="viewWodBtn" data-word="${word.word}">Read Full Entry</button>
     `;
 };
 
 export const showToast = (message, type = "info") => {
   const toast = document.createElement("div");
-  toast.className = `toast toast-${type}`;
+  toast.style.cssText = `
+    position: fixed; bottom: 2rem; right: 2rem; padding: 0.8rem 1.5rem;
+    background: #1a1a1a; color: white; font-size: 0.8rem;
+    border-radius: 4px; z-index: 2000; letter-spacing: 0.02em;
+  `;
   toast.textContent = message;
   document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("show"), 100);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+  setTimeout(() => toast.remove(), 3000);
 };
