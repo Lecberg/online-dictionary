@@ -12,6 +12,7 @@ import {
   addToFavorites,
   removeFromFavorites,
   listenToFavorites,
+  syncHistoryToCloud,
 } from "./services/db";
 import { fetchWordData } from "./services/dictionary";
 import {
@@ -77,8 +78,14 @@ subscribeToAuthChanges((user) => {
   dataUnsubscribers.forEach((unsub) => unsub?.());
   dataUnsubscribers = [];
 
-  // Start new listeners (handles both Auth and Guest)
-  setupDataListeners(user ? user.uid : null);
+  if (user) {
+    // Sync local guest history to the logged-in account
+    syncHistoryToCloud(user.uid).then(() => {
+      setupDataListeners(user.uid);
+    });
+  } else {
+    setupDataListeners(null);
+  }
 });
 
 initWOD();

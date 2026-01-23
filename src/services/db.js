@@ -24,6 +24,20 @@ const getLocalHistory = () => {
 };
 
 /**
+ * Sync local history to Firestore
+ */
+export const syncHistoryToCloud = async (uid) => {
+  const localHistory = getLocalHistory();
+  if (!uid || localHistory.length === 0) return;
+
+  for (const item of localHistory) {
+    await saveToHistory(uid, item.word);
+  }
+  // Clear local history after sync
+  localStorage.removeItem(LOCAL_HISTORY_KEY);
+};
+
+/**
  * Save a word to user's search history
  */
 export const saveToHistory = async (uid, word) => {
@@ -67,11 +81,17 @@ export const listenToHistory = (uid, callback) => {
   const historyRef = collection(db, "users", uid, "searchHistory");
   const q = query(historyRef, orderBy("timestamp", "desc"), limit(MAX_HISTORY));
 
-  return onSnapshot(q, (snapshot) => {
-    const history = [];
-    snapshot.forEach((doc) => history.push(doc.data()));
-    callback(history);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const history = [];
+      snapshot.forEach((doc) => history.push(doc.data()));
+      callback(history);
+    },
+    (error) => {
+      console.error("Firestore History Error:", error);
+    },
+  );
 };
 
 /**
@@ -109,9 +129,15 @@ export const listenToFavorites = (uid, callback) => {
   const favRef = collection(db, "users", uid, "favorites");
   const q = query(favRef, orderBy("timestamp", "desc"));
 
-  return onSnapshot(q, (snapshot) => {
-    const favorites = [];
-    snapshot.forEach((doc) => favorites.push(doc.data()));
-    callback(favorites);
-  });
+  return onSnapshot(
+    q,
+    (snapshot) => {
+      const favorites = [];
+      snapshot.forEach((doc) => favorites.push(doc.data()));
+      callback(favorites);
+    },
+    (error) => {
+      console.error("Firestore Favorites Error:", error);
+    },
+  );
 };
