@@ -1,10 +1,12 @@
-# Dictionary Learning Project
+# Lexicon | Modern Dictionary App
 
-A clean, modern dictionary web application with user authentication.
+Lexicon: A modern, modular dictionary website powered by the Free Dictionary API. Features Firebase authentication, real-time search history, and customizable AI translation supporting multiple LLM protocols (OpenAI/Gemini).
 
 ## Features
 
 - 🔍 Word search with definitions
+- 🪄 **Customizable AI Translation** (Supports OpenAI, Gemini, and local LLMs)
+- 🤖 **Multi-Config AI Support** (Save and switch between different AI providers)
 - 🔊 Audio pronunciation
 - 📚 Multiple meanings and examples
 - ⭐ Favorites system (synced to cloud)
@@ -34,6 +36,7 @@ A clean, modern dictionary web application with user authentication.
 ### Full Setup with Firebase Auth & Cloud Sync
 
 1. **Install Firebase CLI**
+
    ```bash
    npm install -g firebase-tools
    ```
@@ -61,11 +64,11 @@ This project uses the [Free Dictionary API](https://dictionaryapi.dev/)
 
 ## Data Storage
 
-| Feature | Guest Users | Authenticated Users |
-|---------|-------------|---------------------|
-| Word of the Day | LocalStorage | LocalStorage |
-| Search History | LocalStorage | Firebase Realtime DB |
-| Favorites | Not available | Firebase Realtime DB |
+| Feature         | Guest Users   | Authenticated Users  |
+| --------------- | ------------- | -------------------- |
+| Word of the Day | LocalStorage  | LocalStorage         |
+| Search History  | LocalStorage  | Firebase Realtime DB |
+| Favorites       | Not available | Firebase Realtime DB |
 
 ## Learning Outcomes
 
@@ -86,15 +89,38 @@ dictionary-app/
 ├── firebase.json           # Firebase Hosting config
 ├── .firebaserc            # Firebase project ID
 ├── FIREBASE_SETUP.md      # Firebase setup guide
-├── css/
-│   └── style.css          # Main stylesheet
-├── js/
-│   ├── firebase-config.js # Firebase credentials
-│   ├── auth.js            # Authentication logic
-│   ├── app.js             # Main app & search functionality
-│   ├── favorites.js       # Favorites management
-│   └── wordOfDay.js       # Word of the day
+├── src/
+│   ├── components/
+│   │   └── UI.js          # UI rendering logic
+│   ├── services/
+│   │   ├── auth.js        # Authentication logic
+│   │   ├── db.js          # Database/Storage logic
+│   │   ├── ai.js          # LLM Translation service
+│   │   └── firebase.js    # Firebase config
+│   ├── styles/
+│   │   └── main.css       # Stylesheet
+│   └── main.js            # Main entry point
 ├── assets/
-│   └── images/
 └── README.md
+```
+
+dictionary-app/
+├── index.html # Main HTML file
+├── firebase.json # Firebase Hosting config
+├── .firebaserc # Firebase project ID
+├── FIREBASE_SETUP.md # Firebase setup guide
+├── css/
+│ └── style.css # Main stylesheet
+├── js/
+│ ├── firebase-config.js # Firebase credentials
+│ ├── auth.js # Authentication logic
+│ ├── app.js # Main app & search functionality
+│ ├── favorites.js # Favorites management
+│ └── wordOfDay.js # Word of the day
+├── assets/
+│ └── images/
+└── README.md
+
+```
+
 ```
