@@ -60,12 +60,12 @@ const elements = {
   toRegister: document.getElementById("toRegister"),
   toLogin: document.getElementById("toLogin"),
 
-  aiProvider: document.getElementById("aiProvider"),
+  aiProtocol: document.getElementById("aiProtocol"),
   aiApiKey: document.getElementById("aiApiKey"),
   aiHost: document.getElementById("aiHost"),
   aiModel: document.getElementById("aiModel"),
   aiLanguage: document.getElementById("aiLanguage"),
-  closeSettingsBtn: document.getElementById("closeSettingsBtn"),
+  closeSettingsBtn: document.getElementById("closeSettingsBtnTop"),
 
   googleLoginBtn: document.getElementById("googleLoginBtn"),
   githubLoginBtn: document.getElementById("githubLoginBtn"),
@@ -325,8 +325,8 @@ elements.toggleFavBtn.onclick = async () => {
 
 elements.showSettingsBtn.onclick = () => {
   if (aiConfig) {
-    elements.aiProvider.value = aiConfig.provider || "openai";
-    elements.aiApiKey.value = ""; // Don't show obfuscated key
+    elements.aiProtocol.value = aiConfig.protocol || "openai";
+    elements.aiApiKey.value = ""; // Clear for new input, keep existing if empty
     elements.aiHost.value = aiConfig.host || "";
     elements.aiModel.value = aiConfig.model || "";
     elements.aiLanguage.value = aiConfig.targetLanguage || "Spanish";
@@ -340,32 +340,38 @@ elements.closeSettingsBtn.onclick = () => {
 
 elements.aiSettingsForm.onsubmit = async (e) => {
   e.preventDefault();
+
+  // Use existing key if new one isn't provided
+  const newKey = elements.aiApiKey.value.trim();
   const config = {
-    provider: elements.aiProvider.value,
-    apiKey: elements.aiApiKey.value,
-    host: elements.aiHost.value,
-    model: elements.aiModel.value,
+    protocol: elements.aiProtocol.value,
+    apiKey: newKey || (aiConfig ? aiConfig.apiKey : ""),
+    host: elements.aiHost.value.trim(),
+    model: elements.aiModel.value.trim(),
     targetLanguage: elements.aiLanguage.value,
   };
+
+  if (!config.apiKey && !newKey) {
+    showToast("API Key is required", "error");
+    return;
+  }
 
   try {
     await saveAIConfig(currentUser ? currentUser.uid : null, config);
     aiConfig = config;
-    showToast("AI Settings saved!", "success");
-    elements.aiSettingsModal.classList.remove("active");
+    showToast("AI Configuration Updated!", "success");
+    // Modal stays open until close button is clicked (as requested)
   } catch (err) {
     showToast(err.message, "error");
   }
 };
 
-// Close modals on outside click
+// Close modals on outside click (Auth only, AI modal requires button)
 window.addEventListener("click", (e) => {
   if (e.target === elements.loginModal)
     elements.loginModal.classList.remove("active");
   if (e.target === elements.registerModal)
     elements.registerModal.classList.remove("active");
-  if (e.target === elements.aiSettingsModal)
-    elements.aiSettingsModal.classList.remove("active");
 });
 
 async function initWOD() {
