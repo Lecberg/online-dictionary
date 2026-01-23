@@ -25,52 +25,20 @@ import {
 let currentUser = null;
 let currentWordData = null;
 let favoriteWords = [];
-
-// DOM Elements
-const elements = {
-  authNav: document.getElementById("authNav"),
-  guestView: document.getElementById("guestView"),
-  userView: document.getElementById("userView"),
-  userAvatar: document.getElementById("userAvatar"),
-  userName: document.getElementById("userName"),
-  logoutBtn: document.getElementById("logoutBtn"),
-
-  showLoginBtn: document.getElementById("showLoginBtn"),
-  showRegisterBtn: document.getElementById("showRegisterBtn"),
-  loginModal: document.getElementById("loginModal"),
-  registerModal: document.getElementById("registerModal"),
-  loginForm: document.getElementById("loginForm"),
-  registerForm: document.getElementById("registerForm"),
-  toRegister: document.getElementById("toRegister"),
-  toLogin: document.getElementById("toLogin"),
-
-  googleLoginBtn: document.getElementById("googleLoginBtn"),
-  githubLoginBtn: document.getElementById("githubLoginBtn"),
-
-  searchInput: document.getElementById("searchInput"),
-  loader: document.getElementById("loader"),
-  errorMsg: document.getElementById("errorMsg"),
-  resultsSection: document.getElementById("resultsSection"),
-  resWord: document.getElementById("resWord"),
-  resPhonetic: document.getElementById("resPhonetic"),
-  resMeanings: document.getElementById("resMeanings"),
-  toggleFavBtn: document.getElementById("toggleFavBtn"),
-
-  historyList: document.getElementById("historyList"),
-  favoritesList: document.getElementById("favoritesList"),
-  wodContent: document.getElementById("wodContent"),
-};
+let dataUnsubscribers = [];
 
 // --- Initialization ---
 
 subscribeToAuthChanges((user) => {
   currentUser = user;
   updateAuthUI();
-  if (user) {
-    setupDataListeners(user.uid);
-  } else {
-    clearDataUI();
-  }
+
+  // Clean up previous listeners
+  dataUnsubscribers.forEach((unsub) => unsub?.());
+  dataUnsubscribers = [];
+
+  // Start new listeners (handles both Auth and Guest)
+  setupDataListeners(user ? user.uid : null);
 });
 
 initWOD();
@@ -95,7 +63,7 @@ function updateAuthUI() {
 }
 
 function setupDataListeners(uid) {
-  listenToHistory(uid, (history) => {
+  const historyUnsub = listenToHistory(uid, (history) => {
     elements.historyList.innerHTML = history.length
       ? history.map(renderHistoryItem).join("")
       : '<p class="text-muted">No recent searches.</p>';
@@ -105,26 +73,28 @@ function setupDataListeners(uid) {
       tag.onclick = () => performSearch(tag.dataset.word);
     });
   });
+  dataUnsubscribers.push(historyUnsub);
 
-  listenToFavorites(uid, (favorites) => {
-    favoriteWords = favorites.map((f) => f.word.toLowerCase());
-    elements.favoritesList.innerHTML = favorites.length
-      ? favorites.map(renderHistoryItem).join("")
-      : '<p class="text-muted">No favorites yet.</p>';
+  if (uid) {
+    const favUnsub = listenToFavorites(uid, (favorites) => {
+      favoriteWords = favorites.map((f) => f.word.toLowerCase());
+      elements.favoritesList.innerHTML = favorites.length
+        ? favorites.map(renderHistoryItem).join("")
+        : '<p class="text-muted">No favorites yet.</p>';
 
-    updateFavoriteButton();
+      updateFavoriteButton();
 
-    document.querySelectorAll("#favoritesList .history-tag").forEach((tag) => {
-      tag.onclick = () => performSearch(tag.dataset.word);
+      document
+        .querySelectorAll("#favoritesList .history-tag")
+        .forEach((tag) => {
+          tag.onclick = () => performSearch(tag.dataset.word);
+        });
     });
-  });
-}
-
-function clearDataUI() {
-  elements.historyList.innerHTML =
-    '<p class="text-muted">Sign in to see your history.</p>';
-  elements.favoritesList.innerHTML =
-    '<p class="text-muted">Sign in to save favorites.</p>';
+    dataUnsubscribers.push(favUnsub);
+  } else {
+    elements.favoritesList.innerHTML =
+      '<p class="text-muted">Sign in to save favorites.</p>';
+  }
 }
 
 // --- Search Logic ---
@@ -142,9 +112,7 @@ async function performSearch(word) {
     currentWordData = data[0];
 
     displayResults(data);
-    if (currentUser) {
-      saveToHistory(currentUser.uid, word);
-    }
+    saveToHistory(currentUser ? currentUser.uid : null, word);
   } catch (err) {
     elements.errorMsg.textContent = err.message;
     elements.errorMsg.classList.remove("hidden");
