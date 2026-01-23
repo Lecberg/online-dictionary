@@ -10,7 +10,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="./assets/index-Cxigjz8z.js"></script>
+    <script type="module" crossorigin src="./assets/index-ChB0HYan.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-CG65w2Yf.css">
   </head>
   <body>
@@ -180,17 +180,42 @@
       </div>
     </div>
 
-
     <!-- AI Settings Modal -->
     <div id="aiSettingsModal" class="modal">
-      <div class="modal-content">
+      <div class="modal-content" style="position: relative; max-width: 500px">
+        <button
+          id="closeSettingsBtnTop"
+          style="
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-muted);
+          "
+        >
+          &times;
+        </button>
+
         <h2 class="section-title">🤖 AI Translator Settings</h2>
+        <p
+          style="
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+          "
+        >
+          Configure your preferred AI protocol and provider compatibility.
+        </p>
+
         <form id="aiSettingsForm">
           <div class="form-group">
-            <label>AI Provider</label>
-            <select id="aiProvider" class="form-input">
-              <option value="openai">OpenAI</option>
-              <option value="gemini">Google Gemini</option>
+            <label>Compatibility Protocol</label>
+            <select id="aiProtocol" class="form-input">
+              <option value="openai">OpenAI Compatible (Default)</option>
+              <option value="gemini">Google Gemini Compatible</option>
             </select>
           </div>
           <div class="form-group">
@@ -199,26 +224,29 @@
               type="password"
               id="aiApiKey"
               class="form-input"
-              placeholder="Paste your API key here..."
-              required
+              placeholder="Enter key (leave empty to keep existing)"
             />
           </div>
           <div class="form-group">
-            <label>Custom Host (Optional)</label>
+            <label>Custom Host URL</label>
             <input
               type="url"
               id="aiHost"
               class="form-input"
               placeholder="e.g. https://api.openai.com/v1"
             />
+            <small style="font-size: 0.7rem; color: var(--text-muted)"
+              >Ensure URL includes protocol (https://) and version suffix
+              (/v1)</small
+            >
           </div>
           <div class="form-group">
-            <label>Model Name</label>
+            <label>Model Identifier</label>
             <input
               type="text"
               id="aiModel"
               class="form-input"
-              placeholder="e.g. gpt-4o or gemini-1.5-flash"
+              placeholder="e.g. gpt-4o, gemini-1.5-flash, etc."
             />
           </div>
           <div class="form-group">
@@ -235,21 +263,14 @@
               <option value="Italian">Italian</option>
             </select>
           </div>
-          <div style="display: flex; gap: 1rem; margin-top: 2rem">
-            <button type="submit" class="btn btn-primary" style="flex: 1">
-              Save Settings
-            </button>
-            <button
-              type="button"
-              id="closeSettingsBtn"
-              class="btn btn-outline"
-              style="flex: 1"
-            >
-              Cancel
+          <div style="margin-top: 2rem">
+            <button type="submit" class="btn btn-primary" style="width: 100%">
+              Update Configuration
             </button>
           </div>
         </form>
       </div>
     </div>
+
   </body>
 </html>
