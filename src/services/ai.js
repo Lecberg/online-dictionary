@@ -1,14 +1,9 @@
-const obfuscate = (text) => {
-  if (!text) return "";
-  return btoa(text).split("").reverse().join("");
-};
-
 const deobfuscate = (text) => {
   if (!text) return "";
   try {
-    return atob(text.split("").reverse().join(""));
+    return atob(text);
   } catch (e) {
-    return "";
+    return text;
   }
 };
 
@@ -23,12 +18,22 @@ export const translateText = async (text, config) => {
   }
 
   const { protocol, apiKey, model, host, targetLanguage } = config;
-  const key = deobfuscate(apiKey);
+  const key = deobfuscate(apiKey).trim();
+
+  // Diagnostic Log (Redacted for security)
+  console.log(`[AI Diagnostic] Protocol: ${protocol}`);
+  console.log(`[AI Diagnostic] Host: ${host || "Default"}`);
+  console.log(`[AI Diagnostic] Model: ${model || "Default"}`);
+  console.log(
+    `[AI Diagnostic] Key check: Length=${key.length}, StartsWith=${key.substring(0, 3)}..., EndsWith=...${key.substring(key.length - 3)}`,
+  );
 
   try {
     if (protocol === AI_PROTOCOLS.OPENAI) {
       const baseUrl = host || "https://api.openai.com/v1";
-      const response = await fetch(`${baseUrl}/chat/completions`, {
+      const cleanUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
+      const response = await fetch(`${cleanUrl}/chat/completions`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,12 +55,15 @@ export const translateText = async (text, config) => {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("text/html")) {
           throw new Error(
-            `Server returned HTML (likely 404/500). Check your Host URL: ${baseUrl}`,
+            `Server returned HTML (likely 404/500). Check your Host URL: ${cleanUrl}`,
           );
         }
         const error = await response.json();
+        console.error("[AI Error Detail]", error);
         throw new Error(
-          error.error?.message || `API Error (${response.status})`,
+          error.error?.message ||
+            error.message ||
+            `API Error (${response.status}): ${JSON.stringify(error)}`,
         );
       }
 
@@ -108,17 +116,4 @@ export const translateText = async (text, config) => {
   }
 
   throw new Error("Unsupported Protocol");
-};
-
-export const saveConfigLocal = (config) => {
-  const obfuscatedConfig = {
-    ...config,
-    apiKey: obfuscate(config.apiKey),
-  };
-  localStorage.setItem("lexicon_ai_config", JSON.stringify(obfuscatedConfig));
-};
-
-export const getConfigLocal = () => {
-  const config = localStorage.getItem("lexicon_ai_config");
-  return config ? JSON.parse(config) : null;
 };

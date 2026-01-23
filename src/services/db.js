@@ -21,31 +21,31 @@ const LOCAL_AI_CONFIG_KEY = "lexicon_ai_config";
 const MAX_HISTORY = 10;
 
 /**
- * Save AI Configuration
+ * Save AI Configuration List
  */
-export const saveAIConfig = async (uid, config) => {
+export const saveAIConfigs = async (uid, configs) => {
   if (!uid) {
-    localStorage.setItem(LOCAL_AI_CONFIG_KEY, JSON.stringify(config));
+    localStorage.setItem("lexicon_ai_configs", JSON.stringify(configs));
     return;
   }
-  const configRef = doc(db, "users", uid, "settings", "aiConfig");
+  const configRef = doc(db, "users", uid, "settings", "aiConfigs");
   await setDoc(configRef, {
-    ...config,
+    configs: configs,
     updatedAt: serverTimestamp(),
   });
 };
 
 /**
- * Get AI Configuration
+ * Get AI Configuration List
  */
-export const getAIConfig = async (uid) => {
+export const getAIConfigs = async (uid) => {
   if (!uid) {
-    const local = localStorage.getItem(LOCAL_AI_CONFIG_KEY);
-    return local ? JSON.parse(local) : null;
+    const local = localStorage.getItem("lexicon_ai_configs");
+    return local ? JSON.parse(local) : [];
   }
-  const configRef = doc(db, "users", uid, "settings", "aiConfig");
+  const configRef = doc(db, "users", uid, "settings", "aiConfigs");
   const docSnap = await getDoc(configRef);
-  return docSnap.exists() ? docSnap.data() : null;
+  return docSnap.exists() ? docSnap.data().configs : [];
 };
 
 const getLocalHistory = () => {

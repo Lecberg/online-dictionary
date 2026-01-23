@@ -13,11 +13,11 @@ import {
   removeFromFavorites,
   listenToFavorites,
   syncHistoryToCloud,
-  saveAIConfig,
-  getAIConfig,
+  saveAIConfigs,
+  getAIConfigs,
 } from "./services/db";
 import { fetchWordData } from "./services/dictionary";
-import { translateText, AI_PROVIDERS } from "./services/ai";
+import { translateText } from "./services/ai";
 import {
   renderWordResult,
   renderHistoryItem,
@@ -30,7 +30,9 @@ let currentUser = null;
 let currentWordData = null;
 let favoriteWords = [];
 let dataUnsubscribers = [];
-let aiConfig = null;
+let aiConfigs = [];
+let activeConfigIndex = -1;
+let currentEditingIndex = -1;
 
 // DOM Elements
 const elements = {
@@ -60,11 +62,16 @@ const elements = {
   toRegister: document.getElementById("toRegister"),
   toLogin: document.getElementById("toLogin"),
 
+  aiConfigItems: document.getElementById("aiConfigItems"),
+  addNewConfigBtn: document.getElementById("addNewConfigBtn"),
+  aiConfigEditor: document.getElementById("aiConfigEditor"),
+  aiConfigName: document.getElementById("aiConfigName"),
   aiProtocol: document.getElementById("aiProtocol"),
   aiApiKey: document.getElementById("aiApiKey"),
   aiHost: document.getElementById("aiHost"),
   aiModel: document.getElementById("aiModel"),
   aiLanguage: document.getElementById("aiLanguage"),
+  deleteConfigBtn: document.getElementById("deleteConfigBtn"),
   closeSettingsBtn: document.getElementById("closeSettingsBtnTop"),
 
   googleLoginBtn: document.getElementById("googleLoginBtn"),
@@ -90,28 +97,128 @@ subscribeToAuthChanges((user) => {
   currentUser = user;
   updateAuthUI();
 
-  // Clean up previous listeners
   dataUnsubscribers.forEach((unsub) => unsub?.());
   dataUnsubscribers = [];
 
+  const uid = user ? user.uid : null;
   if (user) {
-    // Sync local guest history to the logged-in account
-    syncHistoryToCloud(user.uid).then(() => {
-      setupDataListeners(user.uid);
-    });
-    // Load AI Config
-    getAIConfig(user.uid).then((config) => {
-      aiConfig = config;
-    });
+    syncHistoryToCloud(uid).then(() => setupDataListeners(uid));
   } else {
     setupDataListeners(null);
-    getAIConfig(null).then((config) => {
-      aiConfig = config;
-    });
   }
+
+  getAIConfigs(uid).then((configs) => {
+    aiConfigs = configs;
+    activeConfigIndex = configs.length > 0 ? 0 : -1;
+    renderConfigTags();
+  });
 });
 
 initWOD();
+
+// --- AI Configuration Management ---
+
+function renderConfigTags() {
+  elements.aiConfigItems.innerHTML = aiConfigs
+    .map(
+      (cfg, i) => `
+    <div class="config-tag-wrapper" style="display: flex; align-items: center; gap: 0.3rem;">
+        <button type="button" class="history-tag ${i === activeConfigIndex ? "active-config" : ""}" 
+                data-index="${i}" style="${i === activeConfigIndex ? "background: var(--primary); color: white;" : ""}">
+            ${cfg.name}
+        </button>
+        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; font-size: 0.8rem;">✏️</span>
+    </div>
+  `,
+    )
+    .join("");
+
+  document.querySelectorAll(".history-tag[data-index]").forEach((tag) => {
+    tag.onclick = () => {
+      activeConfigIndex = parseInt(tag.dataset.index);
+      renderConfigTags();
+      showToast(`Switched to ${aiConfigs[activeConfigIndex].name}`, "success");
+    };
+  });
+
+  document.querySelectorAll(".edit-config-icon").forEach((icon) => {
+    icon.onclick = () => {
+      const idx = parseInt(icon.dataset.index);
+      openEditor(idx);
+    };
+  });
+}
+
+function openEditor(index = -1) {
+  currentEditingIndex = index;
+  elements.aiConfigEditor.classList.remove("hidden");
+
+  if (index >= 0) {
+    const cfg = aiConfigs[index];
+    elements.aiConfigName.value = cfg.name;
+    elements.aiProtocol.value = cfg.protocol;
+    elements.aiApiKey.value = ""; // Don't show existing key
+    elements.aiHost.value = cfg.host;
+    elements.aiModel.value = cfg.model;
+    elements.aiLanguage.value = cfg.targetLanguage;
+    elements.deleteConfigBtn.classList.remove("hidden");
+  } else {
+    elements.aiSettingsForm.reset();
+    elements.deleteConfigBtn.classList.add("hidden");
+  }
+}
+
+elements.addNewConfigBtn.onclick = () => openEditor(-1);
+
+elements.deleteConfigBtn.onclick = async () => {
+  if (currentEditingIndex >= 0) {
+    aiConfigs.splice(currentEditingIndex, 1);
+    if (activeConfigIndex === currentEditingIndex) activeConfigIndex = -1;
+    else if (activeConfigIndex > currentEditingIndex) activeConfigIndex--;
+
+    await saveAIConfigs(currentUser ? currentUser.uid : null, aiConfigs);
+    renderConfigTags();
+    elements.aiConfigEditor.classList.add("hidden");
+    showToast("Configuration deleted", "info");
+  }
+};
+
+elements.aiSettingsForm.onsubmit = async (e) => {
+  e.preventDefault();
+  const newKey = elements.aiApiKey.value.trim();
+  const existingKey =
+    currentEditingIndex >= 0 ? aiConfigs[currentEditingIndex].apiKey : "";
+
+  const config = {
+    name: elements.aiConfigName.value.trim(),
+    protocol: elements.aiProtocol.value,
+    apiKey: newKey || existingKey,
+    host: elements.aiHost.value.trim(),
+    model: elements.aiModel.value.trim(),
+    targetLanguage: elements.aiLanguage.value,
+  };
+
+  if (!config.apiKey) {
+    showToast("API Key is required", "error");
+    return;
+  }
+
+  if (currentEditingIndex >= 0) {
+    aiConfigs[currentEditingIndex] = config;
+  } else {
+    aiConfigs.push(config);
+    if (activeConfigIndex === -1) activeConfigIndex = 0;
+  }
+
+  try {
+    await saveAIConfigs(currentUser ? currentUser.uid : null, aiConfigs);
+    renderConfigTags();
+    elements.aiConfigEditor.classList.add("hidden");
+    showToast("Configuration saved!", "success");
+  } catch (err) {
+    showToast(err.message, "error");
+  }
+};
 
 // --- Auth Functions ---
 
@@ -138,9 +245,10 @@ function setupDataListeners(uid) {
       ? history.map(renderHistoryItem).join("")
       : '<p class="text-muted">No recent searches.</p>';
 
-    // Add click listeners to history tags
     document.querySelectorAll(".history-tag").forEach((tag) => {
-      tag.onclick = () => performSearch(tag.dataset.word);
+      if (!tag.hasAttribute("data-index")) {
+        tag.onclick = () => performSearch(tag.dataset.word);
+      }
     });
   });
   dataUnsubscribers.push(historyUnsub);
@@ -171,7 +279,6 @@ function setupDataListeners(uid) {
 
 async function performSearch(word) {
   if (!word) return;
-
   elements.searchInput.value = word;
   elements.loader.classList.remove("hidden");
   elements.errorMsg.classList.add("hidden");
@@ -180,7 +287,6 @@ async function performSearch(word) {
   try {
     const data = await fetchWordData(word);
     currentWordData = data[0];
-
     displayResults(data);
     saveToHistory(currentUser ? currentUser.uid : null, word);
   } catch (err) {
@@ -199,13 +305,12 @@ function displayResults(data) {
   elements.resMeanings.innerHTML = renderWordResult(data);
   elements.resultsSection.classList.remove("hidden");
 
-  // Attach translation listeners
   document.querySelectorAll(".translate-btn").forEach((btn, i) => {
     btn.onclick = async () => {
       const resultDiv = document.getElementById(`trans-${i}`);
       const originalText = btn.dataset.text;
 
-      if (!aiConfig || !aiConfig.apiKey) {
+      if (activeConfigIndex === -1) {
         showToast("Please configure AI settings first!", "info");
         elements.aiSettingsModal.classList.add("active");
         return;
@@ -217,7 +322,10 @@ function displayResults(data) {
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
-        const translation = await translateText(originalText, aiConfig);
+        const translation = await translateText(
+          originalText,
+          aiConfigs[activeConfigIndex],
+        );
         resultDiv.textContent = translation;
       } catch (err) {
         showToast(err.message, "error");
@@ -264,12 +372,14 @@ elements.toLogin.onclick = (e) => {
   elements.loginModal.classList.add("active");
 };
 
-// Close modals on outside click
-window.onclick = (e) => {
-  if (e.target === elements.loginModal)
-    elements.loginModal.classList.remove("active");
-  if (e.target === elements.registerModal)
-    elements.registerModal.classList.remove("active");
+elements.showSettingsBtn.onclick = () => {
+  renderConfigTags();
+  elements.aiSettingsModal.classList.add("active");
+};
+
+elements.closeSettingsBtn.onclick = () => {
+  elements.aiSettingsModal.classList.remove("active");
+  elements.aiConfigEditor.classList.add("hidden");
 };
 
 elements.logoutBtn.onclick = logout;
@@ -321,52 +431,6 @@ elements.toggleFavBtn.onclick = async () => {
   }
 };
 
-// --- AI Settings Logic ---
-
-elements.showSettingsBtn.onclick = () => {
-  if (aiConfig) {
-    elements.aiProtocol.value = aiConfig.protocol || "openai";
-    elements.aiApiKey.value = ""; // Clear for new input, keep existing if empty
-    elements.aiHost.value = aiConfig.host || "";
-    elements.aiModel.value = aiConfig.model || "";
-    elements.aiLanguage.value = aiConfig.targetLanguage || "Spanish";
-  }
-  elements.aiSettingsModal.classList.add("active");
-};
-
-elements.closeSettingsBtn.onclick = () => {
-  elements.aiSettingsModal.classList.remove("active");
-};
-
-elements.aiSettingsForm.onsubmit = async (e) => {
-  e.preventDefault();
-
-  // Use existing key if new one isn't provided
-  const newKey = elements.aiApiKey.value.trim();
-  const config = {
-    protocol: elements.aiProtocol.value,
-    apiKey: newKey || (aiConfig ? aiConfig.apiKey : ""),
-    host: elements.aiHost.value.trim(),
-    model: elements.aiModel.value.trim(),
-    targetLanguage: elements.aiLanguage.value,
-  };
-
-  if (!config.apiKey && !newKey) {
-    showToast("API Key is required", "error");
-    return;
-  }
-
-  try {
-    await saveAIConfig(currentUser ? currentUser.uid : null, config);
-    aiConfig = config;
-    showToast("AI Configuration Updated!", "success");
-    // Modal stays open until close button is clicked (as requested)
-  } catch (err) {
-    showToast(err.message, "error");
-  }
-};
-
-// Close modals on outside click (Auth only, AI modal requires button)
 window.addEventListener("click", (e) => {
   if (e.target === elements.loginModal)
     elements.loginModal.classList.remove("active");

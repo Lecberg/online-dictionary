@@ -210,62 +210,124 @@
         </p>
 
         <form id="aiSettingsForm">
-          <div class="form-group">
-            <label>Compatibility Protocol</label>
-            <select id="aiProtocol" class="form-input">
-              <option value="openai">OpenAI Compatible (Default)</option>
-              <option value="gemini">Google Gemini Compatible</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>API Key</label>
-            <input
-              type="password"
-              id="aiApiKey"
-              class="form-input"
-              placeholder="Enter key (leave empty to keep existing)"
-            />
-          </div>
-          <div class="form-group">
-            <label>Custom Host URL</label>
-            <input
-              type="url"
-              id="aiHost"
-              class="form-input"
-              placeholder="e.g. https://api.openai.com/v1"
-            />
-            <small style="font-size: 0.7rem; color: var(--text-muted)"
-              >Ensure URL includes protocol (https://) and version suffix
-              (/v1)</small
+          <!-- Config List Area -->
+          <div
+            id="aiConfigList"
+            style="
+              margin-bottom: 2rem;
+              display: flex;
+              flex-direction: column;
+              gap: 0.5rem;
+            "
+          >
+            <label
+              style="
+                display: block;
+                font-size: 0.75rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                color: var(--text-muted);
+                margin-bottom: 0.5rem;
+              "
+              >Saved Configurations</label
             >
-          </div>
-          <div class="form-group">
-            <label>Model Identifier</label>
-            <input
-              type="text"
-              id="aiModel"
-              class="form-input"
-              placeholder="e.g. gpt-4o, gemini-1.5-flash, etc."
-            />
-          </div>
-          <div class="form-group">
-            <label>Target Language</label>
-            <select id="aiLanguage" class="form-input">
-              <option value="Spanish">Spanish</option>
-              <option value="French">French</option>
-              <option value="German">German</option>
-              <option value="Chinese">Chinese</option>
-              <option value="Japanese">Japanese</option>
-              <option value="Korean">Korean</option>
-              <option value="Russian">Russian</option>
-              <option value="Portuguese">Portuguese</option>
-              <option value="Italian">Italian</option>
-            </select>
-          </div>
-          <div style="margin-top: 2rem">
-            <button type="submit" class="btn btn-primary" style="width: 100%">
-              Update Configuration
+            <div
+              id="aiConfigItems"
+              style="display: flex; flex-wrap: wrap; gap: 0.5rem"
+            >
+              <!-- Config tags will appear here -->
+            </div>
+            <button
+              type="button"
+              id="addNewConfigBtn"
+              class="btn btn-outline"
+              style="
+                font-size: 0.7rem;
+                padding: 0.2rem 0.5rem;
+                width: fit-content;
+              "
+            >
+              + Add New
             </button>
+          </div>
+
+          <div
+            id="aiConfigEditor"
+            class="hidden"
+            style="border-top: 1px solid var(--border); padding-top: 1.5rem"
+          >
+            <div class="form-group">
+              <label>Configuration Name</label>
+              <input
+                type="text"
+                id="aiConfigName"
+                class="form-input"
+                placeholder="e.g. SiliconFlow, MyGPT, etc."
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label>Compatibility Protocol</label>
+              <select id="aiProtocol" class="form-input">
+                <option value="openai">OpenAI Compatible</option>
+                <option value="gemini">Google Gemini Compatible</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>API Key</label>
+              <input
+                type="password"
+                id="aiApiKey"
+                class="form-input"
+                placeholder="Enter API key"
+              />
+            </div>
+            <div class="form-group">
+              <label>Custom Host URL</label>
+              <input
+                type="url"
+                id="aiHost"
+                class="form-input"
+                placeholder="e.g. https://api.openai.com/v1"
+              />
+            </div>
+            <div class="form-group">
+              <label>Model Identifier</label>
+              <input
+                type="text"
+                id="aiModel"
+                class="form-input"
+                placeholder="e.g. gpt-4o, deepseek-chat"
+              />
+            </div>
+            <div class="form-group">
+              <label>Target Language</label>
+              <select id="aiLanguage" class="form-input">
+                <option value="Spanish">Spanish</option>
+                <option value="Chinese">Chinese</option>
+                <option value="English">English</option>
+                <option value="French">French</option>
+                <option value="German">German</option>
+                <option value="Japanese">Japanese</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem">
+              <button type="submit" class="btn btn-primary" style="flex: 1">
+                Save This Config
+              </button>
+              <button
+                type="button"
+                id="deleteConfigBtn"
+                class="btn btn-outline"
+                style="
+                  color: var(--error);
+                  border-color: var(--error);
+                  flex: 0.5;
+                "
+              >
+                Delete
+              </button>
+            </div>
           </div>
         </form>
       </div>
