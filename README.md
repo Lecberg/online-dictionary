@@ -1,4 +1,4 @@
-# Lexicon | Modern Dictionary App
+# Lexicon | Modern Dictionary Website
 
 Lexicon: A modern, modular dictionary website powered by the Free Dictionary API. Features Firebase authentication, real-time search history, and customizable AI translation supporting multiple LLM protocols (OpenAI/Gemini).
 
