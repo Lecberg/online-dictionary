@@ -46,9 +46,11 @@ export const renderWOD = (wordData) => {
 export const showToast = (message, type = "info") => {
   const toast = document.createElement("div");
   toast.style.cssText = `
-    position: fixed; bottom: 2rem; right: 2rem; padding: 0.8rem 1.5rem;
-    background: #1a1a1a; color: white; font-size: 0.8rem;
-    border-radius: 4px; z-index: 2000; letter-spacing: 0.02em;
+    position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 2rem;
+    background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); color: var(--text-main); font-size: 0.9rem;
+    border-radius: 50px; z-index: 2000; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid var(--border); font-weight: 600;
   `;
   toast.textContent = message;
   document.body.appendChild(toast);
