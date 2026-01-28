@@ -85,6 +85,7 @@ const elements = {
   resPhonetic: document.getElementById("resPhonetic"),
   resMeanings: document.getElementById("resMeanings"),
   toggleFavBtn: document.getElementById("toggleFavBtn"),
+  searchBtn: document.getElementById("searchBtn"),
 
   historyList: document.getElementById("historyList"),
   favoritesList: document.getElementById("favoritesList"),
@@ -356,6 +357,9 @@ function updateFavoriteButton() {
 elements.searchInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") performSearch(e.target.value.trim());
 });
+
+elements.searchBtn.onclick = () =>
+  performSearch(elements.searchInput.value.trim());
 
 elements.showLoginBtn.onclick = () =>
   elements.loginModal.classList.add("active");

@@ -127,7 +127,7 @@ header {
 
 .search-input {
   width: 100%;
-  padding: 1.2rem 1.5rem 1.2rem 4rem;
+  padding: 1.2rem 6rem 1.2rem 4rem;
   font-size: 1.1rem;
   font-family: "Inter", sans-serif;
   border-radius: 50px;
@@ -139,6 +139,27 @@ header {
   transition: all 0.3s ease;
   box-shadow: var(--shadow);
   color: var(--text-main);
+}
+
+.search-btn {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0.7rem 1.5rem;
+  border-radius: 50px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.search-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-50%) scale(1.05);
 }
 
 .search-input::placeholder {
