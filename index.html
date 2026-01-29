@@ -11,12 +11,13 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/src/styles/main.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
     <div class="app-container">
       <header>
         <div class="logo">
-          <h1><span>📚</span> Lexicon</h1>
+          <h1><i data-lucide="book-open"></i> Lexicon</h1>
         </div>
 
         <nav id="authNav" class="auth-nav">
@@ -33,7 +34,7 @@
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
             <button id="showSettingsBtn" class="btn btn-outline">
-              ⚙️ AI Settings
+              <i data-lucide="bot"></i> AI Settings
             </button>
             <button id="logoutBtn" class="btn btn-outline">Logout</button>
           </div>
@@ -58,7 +59,7 @@
               class="search-input"
               placeholder="Search any word..."
             />
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><i data-lucide="search"></i></span>
             <button id="searchBtn" class="search-btn">Search</button>
           </div>
         </section>
@@ -75,7 +76,7 @@
               <span id="resPhonetic" class="phonetic"></span>
             </div>
             <button id="toggleFavBtn" class="btn btn-outline">
-              ⭐ Favorite
+              <i data-lucide="star"></i> Favorite
             </button>
           </div>
           <div id="resMeanings"></div>
@@ -83,7 +84,9 @@
 
         <!-- History -->
         <section id="historySection">
-          <h3 class="section-title">⏱️ Recent Searches</h3>
+          <h3 class="section-title">
+            <i data-lucide="history"></i> Recent Searches
+          </h3>
           <div id="historyList" class="history-grid">
             <p class="text-muted">Your history will appear here.</p>
           </div>
@@ -91,7 +94,7 @@
 
         <!-- Favorites -->
         <section id="favoritesSection">
-          <h3 class="section-title">⭐ Favorites</h3>
+          <h3 class="section-title"><i data-lucide="star"></i> Favorites</h3>
           <div id="favoritesList" class="history-grid">
             <p class="text-muted">Sign in to save favorites.</p>
           </div>
@@ -199,7 +202,9 @@
           &times;
         </button>
 
-        <h2 class="section-title">🤖 AI Translator Settings</h2>
+        <h2 class="section-title">
+          <i data-lucide="bot"></i> AI Translator Settings
+        </h2>
         <p
           style="
             font-size: 0.8rem;

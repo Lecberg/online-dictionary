@@ -34,62 +34,11 @@ let aiConfigs = [];
 let activeConfigIndex = -1;
 let currentEditingIndex = -1;
 
-// DOM Elements
-const elements = {
-  authNav: document.getElementById("authNav"),
-  guestView: document.getElementById("guestView"),
-  userView: document.getElementById("userView"),
-  userAvatar: document.getElementById("userAvatar"),
-  userName: document.getElementById("userName"),
-  logoutBtn: document.getElementById("logoutBtn"),
-  showSettingsBtn: document.getElementById("showSettingsBtn"),
-
-  showLoginBtn: document.getElementById("showLoginBtn"),
-  showRegisterBtn: document.getElementById("showRegisterBtn"),
-  loginModal: document.getElementById("loginModal"),
-  registerModal: document.getElementById("registerModal"),
-  aiSettingsModal: document.getElementById("aiSettingsModal"),
-
-  loginForm: document.getElementById("loginForm"),
-  registerForm: document.getElementById("registerForm"),
-  aiSettingsForm: document.getElementById("aiSettingsForm"),
-
-  loginEmail: document.getElementById("loginEmail"),
-  loginPassword: document.getElementById("loginPassword"),
-  regName: document.getElementById("regName"),
-  regEmail: document.getElementById("regEmail"),
-  regPassword: document.getElementById("regPassword"),
-  toRegister: document.getElementById("toRegister"),
-  toLogin: document.getElementById("toLogin"),
-
-  aiConfigItems: document.getElementById("aiConfigItems"),
-  addNewConfigBtn: document.getElementById("addNewConfigBtn"),
-  aiConfigEditor: document.getElementById("aiConfigEditor"),
-  aiConfigName: document.getElementById("aiConfigName"),
-  aiProtocol: document.getElementById("aiProtocol"),
-  aiApiKey: document.getElementById("aiApiKey"),
-  aiHost: document.getElementById("aiHost"),
-  aiModel: document.getElementById("aiModel"),
-  aiLanguage: document.getElementById("aiLanguage"),
-  deleteConfigBtn: document.getElementById("deleteConfigBtn"),
-  closeSettingsBtn: document.getElementById("closeSettingsBtnTop"),
-
-  googleLoginBtn: document.getElementById("googleLoginBtn"),
-  githubLoginBtn: document.getElementById("githubLoginBtn"),
-
-  searchInput: document.getElementById("searchInput"),
-  loader: document.getElementById("loader"),
-  errorMsg: document.getElementById("errorMsg"),
-  resultsSection: document.getElementById("resultsSection"),
-  resWord: document.getElementById("resWord"),
-  resPhonetic: document.getElementById("resPhonetic"),
-  resMeanings: document.getElementById("resMeanings"),
-  toggleFavBtn: document.getElementById("toggleFavBtn"),
-  searchBtn: document.getElementById("searchBtn"),
-
-  historyList: document.getElementById("historyList"),
-  favoritesList: document.getElementById("favoritesList"),
-  wodContent: document.getElementById("wodContent"),
+// Initialize Lucide
+const refreshIcons = () => {
+  if (window.lucide) {
+    window.lucide.createIcons();
+  }
 };
 
 // --- Initialization ---
@@ -107,6 +56,54 @@ subscribeToAuthChanges((user) => {
   } else {
     setupDataListeners(null);
   }
+
+  getAIConfigs(uid).then((configs) => {
+    aiConfigs = configs;
+    activeConfigIndex = configs.length > 0 ? 0 : -1;
+    renderConfigTags();
+  });
+  
+  refreshIcons();
+});
+
+initWOD();
+
+// --- AI Configuration Management ---
+
+function renderConfigTags() {
+  elements.aiConfigItems.innerHTML = aiConfigs
+    .map(
+      (cfg, i) => `
+    <div class="config-tag-wrapper" style="display: flex; align-items: center; gap: 0.3rem;">
+        <button type="button" class="history-tag ${i === activeConfigIndex ? "active-config" : ""}" 
+                data-index="${i}" style="${i === activeConfigIndex ? "background: var(--primary); color: white;" : ""}">
+            ${cfg.name}
+        </button>
+        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; display: flex; align-items: center; color: var(--text-muted);">
+          <i data-lucide="pencil" style="width: 14px; height: 14px;"></i>
+        </span>
+    </div>
+  `,
+    )
+    .join("");
+
+  document.querySelectorAll(".history-tag[data-index]").forEach((tag) => {
+    tag.onclick = () => {
+      activeConfigIndex = parseInt(tag.dataset.index);
+      renderConfigTags();
+      showToast(`Switched to ${aiConfigs[activeConfigIndex].name}`, "success");
+    };
+  });
+
+  document.querySelectorAll(".edit-config-icon").forEach((icon) => {
+    icon.onclick = () => {
+      const idx = parseInt(icon.dataset.index);
+      openEditor(idx);
+    };
+  });
+  
+  refreshIcons();
+}
 
   getAIConfigs(uid).then((configs) => {
     aiConfigs = configs;
@@ -251,6 +248,7 @@ function setupDataListeners(uid) {
         tag.onclick = () => performSearch(tag.dataset.word);
       }
     });
+    refreshIcons();
   });
   dataUnsubscribers.push(historyUnsub);
 
@@ -268,6 +266,7 @@ function setupDataListeners(uid) {
         .forEach((tag) => {
           tag.onclick = () => performSearch(tag.dataset.word);
         });
+      refreshIcons();
     });
     dataUnsubscribers.push(favUnsub);
   } else {
@@ -319,7 +318,8 @@ function displayResults(data) {
 
       try {
         btn.disabled = true;
-        btn.textContent = "⌛";
+        btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width: 14px; height: 14px;"></i>';
+        refreshIcons();
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
@@ -333,12 +333,14 @@ function displayResults(data) {
         resultDiv.classList.add("hidden");
       } finally {
         btn.disabled = false;
-        btn.textContent = "🪄";
+        btn.innerHTML = '<i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>';
+        refreshIcons();
       }
     };
   });
 
   updateFavoriteButton();
+  refreshIcons();
   window.scrollTo({
     top: elements.resultsSection.offsetTop - 100,
     behavior: "smooth",
@@ -348,8 +350,11 @@ function displayResults(data) {
 function updateFavoriteButton() {
   if (!currentWordData) return;
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
-  elements.toggleFavBtn.innerHTML = isFav ? "❤️ Unfavorite" : "⭐ Favorite";
+  elements.toggleFavBtn.innerHTML = isFav 
+    ? '<i data-lucide="heart" style="fill: currentColor;"></i> Unfavorite' 
+    : '<i data-lucide="star"></i> Favorite';
   elements.toggleFavBtn.classList.toggle("btn-primary", isFav);
+  refreshIcons();
 }
 
 // --- Event Listeners ---
