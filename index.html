@@ -10,15 +10,14 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script type="module" crossorigin src="./assets/index-C6MI2SL3.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-C_R6TvsV.css">
+    <script type="module" crossorigin src="./assets/index-D1aye4mq.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Bq1CTeRQ.css">
   </head>
   <body>
     <div class="app-container">
       <header>
         <div class="logo">
-          <h1><i data-lucide="book-open"></i> Lexicon</h1>
+          <h1><span>📚</span> Lexicon</h1>
         </div>
 
         <nav id="authNav" class="auth-nav">
@@ -35,7 +34,7 @@
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
             <button id="showSettingsBtn" class="btn btn-outline">
-              <i data-lucide="bot"></i> AI Settings
+              ⚙️ AI Settings
             </button>
             <button id="logoutBtn" class="btn btn-outline">Logout</button>
           </div>
@@ -60,7 +59,7 @@
               class="search-input"
               placeholder="Search any word..."
             />
-            <span class="search-icon"><i data-lucide="search"></i></span>
+            <span class="search-icon">🔍</span>
             <button id="searchBtn" class="search-btn">Search</button>
           </div>
         </section>
@@ -77,7 +76,7 @@
               <span id="resPhonetic" class="phonetic"></span>
             </div>
             <button id="toggleFavBtn" class="btn btn-outline">
-              <i data-lucide="star"></i> Favorite
+              ⭐ Favorite
             </button>
           </div>
           <div id="resMeanings"></div>
@@ -85,9 +84,7 @@
 
         <!-- History -->
         <section id="historySection">
-          <h3 class="section-title">
-            <i data-lucide="history"></i> Recent Searches
-          </h3>
+          <h3 class="section-title">⏱️ Recent Searches</h3>
           <div id="historyList" class="history-grid">
             <p class="text-muted">Your history will appear here.</p>
           </div>
@@ -95,7 +92,7 @@
 
         <!-- Favorites -->
         <section id="favoritesSection">
-          <h3 class="section-title"><i data-lucide="star"></i> Favorites</h3>
+          <h3 class="section-title">⭐ Favorites</h3>
           <div id="favoritesList" class="history-grid">
             <p class="text-muted">Sign in to save favorites.</p>
           </div>
@@ -203,9 +200,7 @@
           &times;
         </button>
 
-        <h2 class="section-title">
-          <i data-lucide="bot"></i> AI Translator Settings
-        </h2>
+        <h2 class="section-title">🤖 AI Translator Settings</h2>
         <p
           style="
             font-size: 0.8rem;
