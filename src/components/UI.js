@@ -30,6 +30,75 @@ export const renderWordResult = (data) => {
     .join("");
 };
 
+// Simple markdown parser
+const parseMarkdown = (text) => {
+  if (!text) return "";
+
+  let html = text
+    // Escape HTML
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    // Headers
+    .replace(/^### (.*$)/gim, "<h3>$1</h3>")
+    .replace(/^## (.*$)/gim, "<h2>$1</h2>")
+    .replace(/^# (.*$)/gim, "<h1>$1</h1>")
+    // Bold and Italic
+    .replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>")
+    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g, "<em>$1</em>")
+    .replace(/___(.*?)___/g, "<strong><em>$1</em></strong>")
+    .replace(/__(.*?)__/g, "<strong>$1</strong>")
+    .replace(/_(.*?)_/g, "<em>$1</em>")
+    // Code
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    // Blockquotes
+    .replace(/^\> (.*$)/gim, "<blockquote>$1</blockquote>")
+    // Lists
+    .replace(/^\- (.*$)/gim, "<li>$1</li>")
+    .replace(/^\* (.*$)/gim, "<li>$1</li>")
+    .replace(/^\d+\. (.*$)/gim, "<li>$1</li>")
+    // Links
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener">$1</a>',
+    )
+    // Line breaks
+    .replace(/\n/g, "<br>");
+
+  // Wrap consecutive li elements in ul/ol
+  html = html.replace(/(<li>.*?<\/li>)+/g, (match) => {
+    const isOrdered = /^\d+/.test(
+      text.substring(text.indexOf(match) - 10, text.indexOf(match)),
+    );
+    const tag = isOrdered ? "ol" : "ul";
+    return `<${tag}>${match}</${tag}>`;
+  });
+
+  // Wrap consecutive blockquotes
+  html = html.replace(/(<blockquote>.*?<\/blockquote>)+/g, (match) => {
+    return `<div class="quote-block">${match}</div>`;
+  });
+
+  return html;
+};
+
+export const renderAIResult = (word, definition, configName) => {
+  return `
+        <div class="ai-generated-section">
+            <div class="ai-badge">
+                <svg class="icon icon--sm" aria-hidden="true">
+                    <use href="/src/assets/icons/sprite.svg#icon-robot"></use>
+                </svg>
+                AI Generated (${configName})
+            </div>
+            <div class="ai-content markdown-body">
+                ${parseMarkdown(definition)}
+            </div>
+        </div>
+    `;
+};
+
 export const renderHistoryItem = (item) => {
   return `<button class="history-tag" data-word="${item.word}">${item.word}</button>`;
 };

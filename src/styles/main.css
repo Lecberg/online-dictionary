@@ -168,7 +168,7 @@ header {
 
 .search-input {
   width: 100%;
-  padding: 1.2rem 6rem 1.2rem 4rem;
+  padding: 1.2rem 11.5rem 1.2rem 4rem;
   font-size: 1.1rem;
   font-family: "Inter", sans-serif;
   border-radius: 50px;
@@ -182,25 +182,45 @@ header {
   color: var(--text-main);
 }
 
-.search-btn {
+.search-actions {
   position: absolute;
   right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
-  padding: 0.7rem 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  z-index: 10;
+}
+
+.search-btn {
+  padding: 0.7rem 1.2rem;
   border-radius: 50px;
-  background: var(--primary);
+  background: var(--secondary);
   color: white;
   border: none;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.search-btn.ai-btn {
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.7rem 1.5rem;
 }
 
 .search-btn:hover {
+  filter: brightness(1.1);
+  transform: scale(1.05);
+}
+
+.search-btn.ai-btn:hover {
   background: var(--primary-hover);
-  transform: translateY(-50%) scale(1.05);
 }
 
 .search-input::placeholder {
@@ -748,6 +768,135 @@ header {
   border: 1px dashed var(--primary);
   border-radius: 16px;
   font-size: 1rem;
+}
+
+.ai-generated-section {
+  margin-top: 2rem;
+  padding: 2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(236, 72, 153, 0.08) 0%,
+    rgba(99, 102, 241, 0.08) 100%
+  );
+  border: 1px solid rgba(236, 72, 153, 0.2);
+  border-radius: 20px;
+  position: relative;
+}
+
+.ai-badge {
+  position: absolute;
+  top: -12px;
+  right: 20px;
+  background: white;
+  padding: 0.3rem 1rem;
+  border-radius: 50px;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.ai-content {
+  font-size: 1rem;
+  color: var(--text-main);
+  line-height: 1.8;
+}
+
+.ai-content br {
+  margin-bottom: 0.5rem;
+  display: block;
+  content: "";
+}
+
+/* Markdown Styles */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  font-family: "Playfair Display", serif;
+  color: var(--primary);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.markdown-body h1 {
+  font-size: 1.5rem;
+}
+
+.markdown-body h2 {
+  font-size: 1.25rem;
+}
+
+.markdown-body h3 {
+  font-size: 1.1rem;
+}
+
+.markdown-body strong {
+  font-weight: 700;
+  color: var(--secondary);
+}
+
+.markdown-body em {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.markdown-body code {
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 0.9em;
+  color: var(--secondary);
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin: 0.5rem 0;
+}
+
+.markdown-body blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--primary);
+  background: rgba(236, 72, 153, 0.05);
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+.markdown-body .quote-block {
+  margin: 1rem 0;
+}
+
+.markdown-body a {
+  color: var(--secondary);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.markdown-body a:hover {
+  color: var(--primary);
+}
+
+.markdown-body p {
+  margin: 0.75rem 0;
 }
 
 .hidden {

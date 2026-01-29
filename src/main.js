@@ -17,9 +17,10 @@ import {
   getAIConfigs,
 } from "./services/db";
 import { fetchWordData } from "./services/dictionary";
-import { translateText } from "./services/ai";
+import { translateText, generateWordDefinition } from "./services/ai";
 import {
   renderWordResult,
+  renderAIResult,
   renderHistoryItem,
   renderWOD,
   showToast,
@@ -102,6 +103,7 @@ const elements = {
   resMeanings: document.getElementById("resMeanings"),
   toggleFavBtn: document.getElementById("toggleFavBtn"),
   searchBtn: document.getElementById("searchBtn"),
+  aiGenerateBtn: document.getElementById("aiGenerateBtn"),
 
   historyList: document.getElementById("historyList"),
   favoritesList: document.getElementById("favoritesList"),
@@ -430,6 +432,68 @@ async function performSearch(word) {
   }
 }
 
+async function handleAIGenerate() {
+  const word = elements.searchInput.value.trim();
+  if (!word) {
+    showToast("Please enter a word first", "info");
+    return;
+  }
+
+  if (activeConfigIndex === -1 || !aiConfigs[activeConfigIndex]) {
+    showToast("Please configure AI settings first!", "info");
+    renderConfigTags();
+    elements.aiSettingsModal.classList.add("active");
+    document.body.classList.add("modal-open");
+    return;
+  }
+
+  const aiBtn = elements.aiGenerateBtn;
+  const originalHtml = aiBtn.innerHTML;
+
+  try {
+    aiBtn.disabled = true;
+    aiBtn.innerHTML = `${iconSvg("icon-spinner", "icon--sm")} thinking...`;
+
+    elements.loader.textContent = "AI is thinking...";
+    elements.loader.classList.remove("hidden");
+    elements.errorMsg.classList.add("hidden");
+
+    const config = aiConfigs[activeConfigIndex];
+    const definition = await generateWordDefinition(word, config);
+
+    // If showing results for a different word or section is hidden, reset for new word
+    const isNewWord =
+      elements.resWord.textContent.toLowerCase() !== word.toLowerCase();
+    if (elements.resultsSection.classList.contains("hidden") || isNewWord) {
+      elements.resWord.textContent = word;
+      elements.resPhonetic.textContent = "AI Generated Entry";
+      elements.resMeanings.innerHTML = "";
+      elements.resultsSection.classList.remove("hidden");
+    }
+
+    // Append AI result
+    elements.resMeanings.innerHTML += renderAIResult(
+      word,
+      definition,
+      config.name,
+    );
+
+    saveToHistory(currentUser ? currentUser.uid : null, word);
+
+    window.scrollTo({
+      top: elements.resultsSection.offsetTop - 100,
+      behavior: "smooth",
+    });
+  } catch (err) {
+    showToast(err.message, "error");
+  } finally {
+    aiBtn.disabled = false;
+    aiBtn.innerHTML = originalHtml;
+    elements.loader.textContent = "Searching...";
+    elements.loader.classList.add("hidden");
+  }
+}
+
 function displayResults(data) {
   const wordData = data[0];
   elements.resWord.textContent = wordData.word;
@@ -503,6 +567,8 @@ elements.searchInput.addEventListener("keypress", (e) => {
 
 elements.searchBtn.onclick = () =>
   performSearch(elements.searchInput.value.trim());
+
+elements.aiGenerateBtn.onclick = () => handleAIGenerate();
 
 elements.showLoginBtn.onclick = () =>
   elements.loginModal.classList.add("active");
