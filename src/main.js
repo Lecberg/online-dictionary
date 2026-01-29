@@ -62,7 +62,7 @@ subscribeToAuthChanges((user) => {
     activeConfigIndex = configs.length > 0 ? 0 : -1;
     renderConfigTags();
   });
-  
+
   refreshIcons();
 });
 
@@ -101,50 +101,8 @@ function renderConfigTags() {
       openEditor(idx);
     };
   });
-  
+
   refreshIcons();
-}
-
-  getAIConfigs(uid).then((configs) => {
-    aiConfigs = configs;
-    activeConfigIndex = configs.length > 0 ? 0 : -1;
-    renderConfigTags();
-  });
-});
-
-initWOD();
-
-// --- AI Configuration Management ---
-
-function renderConfigTags() {
-  elements.aiConfigItems.innerHTML = aiConfigs
-    .map(
-      (cfg, i) => `
-    <div class="config-tag-wrapper" style="display: flex; align-items: center; gap: 0.3rem;">
-        <button type="button" class="history-tag ${i === activeConfigIndex ? "active-config" : ""}" 
-                data-index="${i}" style="${i === activeConfigIndex ? "background: var(--primary); color: white;" : ""}">
-            ${cfg.name}
-        </button>
-        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; font-size: 0.8rem;">✏️</span>
-    </div>
-  `,
-    )
-    .join("");
-
-  document.querySelectorAll(".history-tag[data-index]").forEach((tag) => {
-    tag.onclick = () => {
-      activeConfigIndex = parseInt(tag.dataset.index);
-      renderConfigTags();
-      showToast(`Switched to ${aiConfigs[activeConfigIndex].name}`, "success");
-    };
-  });
-
-  document.querySelectorAll(".edit-config-icon").forEach((icon) => {
-    icon.onclick = () => {
-      const idx = parseInt(icon.dataset.index);
-      openEditor(idx);
-    };
-  });
 }
 
 function openEditor(index = -1) {
@@ -318,7 +276,8 @@ function displayResults(data) {
 
       try {
         btn.disabled = true;
-        btn.innerHTML = '<i data-lucide="loader-2" class="spin" style="width: 14px; height: 14px;"></i>';
+        btn.innerHTML =
+          '<i data-lucide="loader-2" class="spin" style="width: 14px; height: 14px;"></i>';
         refreshIcons();
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
@@ -333,7 +292,8 @@ function displayResults(data) {
         resultDiv.classList.add("hidden");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>';
+        btn.innerHTML =
+          '<i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>';
         refreshIcons();
       }
     };
@@ -350,8 +310,8 @@ function displayResults(data) {
 function updateFavoriteButton() {
   if (!currentWordData) return;
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
-  elements.toggleFavBtn.innerHTML = isFav 
-    ? '<i data-lucide="heart" style="fill: currentColor;"></i> Unfavorite' 
+  elements.toggleFavBtn.innerHTML = isFav
+    ? '<i data-lucide="heart" style="fill: currentColor;"></i> Unfavorite'
     : '<i data-lucide="star"></i> Favorite';
   elements.toggleFavBtn.classList.toggle("btn-primary", isFav);
   refreshIcons();
