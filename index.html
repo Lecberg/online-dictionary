@@ -10,8 +10,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="./assets/index-B0vZCNEm.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CR7r_58g.css">
+    <script type="module" crossorigin src="./assets/index-DUKtxTay.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-8744HGiz.css">
   </head>
   <body>
     <div class="app-container">
@@ -214,7 +214,7 @@
 
     <!-- AI Settings Modal -->
     <div id="aiSettingsModal" class="modal">
-      <div class="modal-content modal-content--wide">
+      <div class="modal-content modal-content--wide ai-modal">
         <button
           id="closeSettingsBtnTop"
           type="button"
@@ -226,143 +226,189 @@
           </svg>
         </button>
 
-        <h2 class="section-title">
-          <svg class="icon icon--lg" aria-hidden="true">
-            <use href="./assets/sprite-CNjv0feQ.svg#icon-robot"></use>
-          </svg>
-          AI Translator Settings
-        </h2>
-        <p
-          style="
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-          "
-        >
-          Configure your preferred AI protocol and provider compatibility.
-        </p>
+        <div class="ai-modal-body">
+          <h2 class="section-title">
+            <svg class="icon icon--lg" aria-hidden="true">
+              <use href="./assets/sprite-CNjv0feQ.svg#icon-robot"></use>
+            </svg>
+            AI Translator Settings
+          </h2>
+          <p class="modal-subtitle">
+            Keep multiple provider presets handy, switch the active one with a
+            single tap, and ensure your API keys stay organized.
+          </p>
 
-        <form id="aiSettingsForm">
-          <!-- Config List Area -->
-          <div
-            id="aiConfigList"
-            style="
-              margin-bottom: 2rem;
-              display: flex;
-              flex-direction: column;
-              gap: 0.5rem;
-            "
-          >
-            <label
-              style="
-                display: block;
-                font-size: 0.75rem;
-                font-weight: 600;
-                text-transform: uppercase;
-                color: var(--text-muted);
-                margin-bottom: 0.5rem;
-              "
-              >Saved Configurations</label
+          <div class="ai-settings-layout">
+            <section
+              class="ai-settings-panel"
+              aria-label="AI configuration panel"
             >
-            <div
-              id="aiConfigItems"
-              style="display: flex; flex-wrap: wrap; gap: 0.5rem"
-            >
-              <!-- Config tags will appear here -->
-            </div>
-            <button
-              type="button"
-              id="addNewConfigBtn"
-              class="btn btn-outline"
-              style="
-                font-size: 0.7rem;
-                padding: 0.2rem 0.5rem;
-                width: fit-content;
-              "
-            >
-              + Add New
-            </button>
-          </div>
+              <div class="active-config-card" id="activeConfigSummary">
+                <p class="eyebrow-label">Active configuration</p>
+                <h3>No configuration selected</h3>
+                <p class="text-muted small-text">
+                  Select or create a configuration to translate definitions.
+                </p>
+              </div>
+              <div class="active-actions">
+                <button
+                  type="button"
+                  id="testAiConfigBtn"
+                  class="btn btn-outline btn-sm"
+                  disabled
+                >
+                  Test translation
+                </button>
+              </div>
 
-          <div
-            id="aiConfigEditor"
-            class="hidden"
-            style="border-top: 1px solid var(--border); padding-top: 1.5rem"
-          >
-            <div class="form-group">
-              <label>Configuration Name</label>
-              <input
-                type="text"
-                id="aiConfigName"
-                class="form-input"
-                placeholder="e.g. SiliconFlow, MyGPT, etc."
-                required
-              />
-            </div>
-            <div class="form-group">
-              <label>Compatibility Protocol</label>
-              <select id="aiProtocol" class="form-input">
-                <option value="openai">OpenAI Compatible</option>
-                <option value="gemini">Google Gemini Compatible</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>API Key</label>
-              <input
-                type="password"
-                id="aiApiKey"
-                class="form-input"
-                placeholder="Enter API key"
-              />
-            </div>
-            <div class="form-group">
-              <label>Custom Host URL</label>
-              <input
-                type="url"
-                id="aiHost"
-                class="form-input"
-                placeholder="e.g. https://api.openai.com/v1"
-              />
-            </div>
-            <div class="form-group">
-              <label>Model Identifier</label>
-              <input
-                type="text"
-                id="aiModel"
-                class="form-input"
-                placeholder="e.g. gpt-4o, deepseek-chat"
-              />
-            </div>
-            <div class="form-group">
-              <label>Target Language</label>
-              <select id="aiLanguage" class="form-input">
-                <option value="Spanish">Spanish</option>
-                <option value="Chinese">Chinese</option>
-                <option value="English">English</option>
-                <option value="French">French</option>
-                <option value="German">German</option>
-                <option value="Japanese">Japanese</option>
-              </select>
-            </div>
-            <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem">
-              <button type="submit" class="btn btn-primary" style="flex: 1">
-                Save This Config
-              </button>
-              <button
-                type="button"
-                id="deleteConfigBtn"
-                class="btn btn-outline"
-                style="
-                  color: var(--error);
-                  border-color: var(--error);
-                  flex: 0.5;
-                "
-              >
-                Delete
-              </button>
-            </div>
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow-label">Saved configurations</p>
+                  <p class="text-muted small-text">
+                    Choose a preset to activate it instantly, or edit to update
+                    credentials.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  id="addNewConfigBtn"
+                  class="btn btn-outline btn-sm"
+                >
+                  + New
+                </button>
+              </div>
+
+              <div id="aiConfigItems" class="config-list">
+                <p class="text-muted">Nothing saved yet.</p>
+              </div>
+
+              <div
+                id="aiSettingsMessage"
+                class="status-banner hidden"
+                role="status"
+              ></div>
+            </section>
+
+            <section class="ai-editor-panel" aria-live="polite">
+              <div id="aiEditorEmptyState" class="editor-empty">
+                <svg class="icon icon--lg" aria-hidden="true">
+                  <use href="./assets/sprite-CNjv0feQ.svg#icon-wand"></use>
+                </svg>
+                <h3>Plan your translator</h3>
+                <p>
+                  Select an existing preset to review its details or start a new
+                  one to connect a provider.
+                </p>
+                <button
+                  type="button"
+                  id="startNewConfigBtn"
+                  class="btn btn-primary"
+                >
+                  Create configuration
+                </button>
+              </div>
+
+              <div id="aiConfigEditor" class="hidden">
+                <form id="aiSettingsForm">
+                  <header class="editor-header">
+                    <div>
+                      <p id="aiEditorModeLabel" class="eyebrow-label">
+                        New configuration
+                      </p>
+                      <h3 id="aiEditorTitle">Create AI preset</h3>
+                      <p
+                        id="aiEditorSubtitle"
+                        class="text-muted small-text"
+                      ></p>
+                    </div>
+                    <button
+                      type="button"
+                      id="deleteConfigBtn"
+                      class="btn btn-outline btn-danger hidden"
+                    >
+                      Delete
+                    </button>
+                  </header>
+
+                  <div class="form-grid">
+                    <div class="form-group">
+                      <label>Configuration Name</label>
+                      <input
+                        type="text"
+                        id="aiConfigName"
+                        class="form-input"
+                        placeholder="e.g. SiliconFlow, MyGPT"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>Compatibility Protocol</label>
+                      <select id="aiProtocol" class="form-input">
+                        <option value="openai">OpenAI compatible</option>
+                        <option value="gemini">Google Gemini compatible</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>API Key</label>
+                      <input
+                        type="password"
+                        id="aiApiKey"
+                        class="form-input"
+                        placeholder="Paste provider key"
+                      />
+                      <p class="input-hint">
+                        Keys stay local to your browser unless you are signed
+                        in.
+                      </p>
+                    </div>
+                    <div class="form-group">
+                      <label>Custom Host URL</label>
+                      <input
+                        type="url"
+                        id="aiHost"
+                        class="form-input"
+                        placeholder="https://api.openai.com/v1"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>Model Identifier</label>
+                      <input
+                        type="text"
+                        id="aiModel"
+                        class="form-input"
+                        placeholder="gpt-4o, deepseek-chat"
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>Target Language</label>
+                      <select id="aiLanguage" class="form-input">
+                        <option value="Spanish">Spanish</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="English">English</option>
+                        <option value="French">French</option>
+                        <option value="German">German</option>
+                        <option value="Japanese">Japanese</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                      Save preset
+                    </button>
+                    <button
+                      type="button"
+                      id="cancelEditorBtn"
+                      class="btn btn-outline"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </section>
           </div>
-        </form>
+        </div>
       </div>
     </div>
 
