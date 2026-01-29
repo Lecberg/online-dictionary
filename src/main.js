@@ -410,10 +410,12 @@ elements.showSettingsBtn.onclick = () => {
   elements.aiSettingsModal.classList.add("active");
 };
 
-elements.closeSettingsBtn.onclick = () => {
+function closeAiSettingsModal() {
   elements.aiSettingsModal.classList.remove("active");
   elements.aiConfigEditor.classList.add("hidden");
-};
+}
+
+elements.closeSettingsBtn.onclick = closeAiSettingsModal;
 
 elements.logoutBtn.onclick = logout;
 elements.googleLoginBtn.onclick = loginWithGoogle;
@@ -469,6 +471,16 @@ window.addEventListener("click", (e) => {
     elements.loginModal.classList.remove("active");
   if (e.target === elements.registerModal)
     elements.registerModal.classList.remove("active");
+  if (e.target === elements.aiSettingsModal) closeAiSettingsModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (
+    e.key === "Escape" &&
+    elements.aiSettingsModal.classList.contains("active")
+  ) {
+    closeAiSettingsModal();
+  }
 });
 
 async function initWOD() {
