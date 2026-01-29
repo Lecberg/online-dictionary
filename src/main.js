@@ -34,11 +34,62 @@ let aiConfigs = [];
 let activeConfigIndex = -1;
 let currentEditingIndex = -1;
 
-// Initialize Lucide
-const refreshIcons = () => {
-  if (window.lucide) {
-    window.lucide.createIcons();
-  }
+// DOM Elements
+const elements = {
+  authNav: document.getElementById("authNav"),
+  guestView: document.getElementById("guestView"),
+  userView: document.getElementById("userView"),
+  userAvatar: document.getElementById("userAvatar"),
+  userName: document.getElementById("userName"),
+  logoutBtn: document.getElementById("logoutBtn"),
+  showSettingsBtn: document.getElementById("showSettingsBtn"),
+
+  showLoginBtn: document.getElementById("showLoginBtn"),
+  showRegisterBtn: document.getElementById("showRegisterBtn"),
+  loginModal: document.getElementById("loginModal"),
+  registerModal: document.getElementById("registerModal"),
+  aiSettingsModal: document.getElementById("aiSettingsModal"),
+
+  loginForm: document.getElementById("loginForm"),
+  registerForm: document.getElementById("registerForm"),
+  aiSettingsForm: document.getElementById("aiSettingsForm"),
+
+  loginEmail: document.getElementById("loginEmail"),
+  loginPassword: document.getElementById("loginPassword"),
+  regName: document.getElementById("regName"),
+  regEmail: document.getElementById("regEmail"),
+  regPassword: document.getElementById("regPassword"),
+  toRegister: document.getElementById("toRegister"),
+  toLogin: document.getElementById("toLogin"),
+
+  aiConfigItems: document.getElementById("aiConfigItems"),
+  addNewConfigBtn: document.getElementById("addNewConfigBtn"),
+  aiConfigEditor: document.getElementById("aiConfigEditor"),
+  aiConfigName: document.getElementById("aiConfigName"),
+  aiProtocol: document.getElementById("aiProtocol"),
+  aiApiKey: document.getElementById("aiApiKey"),
+  aiHost: document.getElementById("aiHost"),
+  aiModel: document.getElementById("aiModel"),
+  aiLanguage: document.getElementById("aiLanguage"),
+  deleteConfigBtn: document.getElementById("deleteConfigBtn"),
+  closeSettingsBtn: document.getElementById("closeSettingsBtnTop"),
+
+  googleLoginBtn: document.getElementById("googleLoginBtn"),
+  githubLoginBtn: document.getElementById("githubLoginBtn"),
+
+  searchInput: document.getElementById("searchInput"),
+  loader: document.getElementById("loader"),
+  errorMsg: document.getElementById("errorMsg"),
+  resultsSection: document.getElementById("resultsSection"),
+  resWord: document.getElementById("resWord"),
+  resPhonetic: document.getElementById("resPhonetic"),
+  resMeanings: document.getElementById("resMeanings"),
+  toggleFavBtn: document.getElementById("toggleFavBtn"),
+  searchBtn: document.getElementById("searchBtn"),
+
+  historyList: document.getElementById("historyList"),
+  favoritesList: document.getElementById("favoritesList"),
+  wodContent: document.getElementById("wodContent"),
 };
 
 // --- Initialization ---
@@ -62,8 +113,6 @@ subscribeToAuthChanges((user) => {
     activeConfigIndex = configs.length > 0 ? 0 : -1;
     renderConfigTags();
   });
-
-  refreshIcons();
 });
 
 initWOD();
@@ -79,9 +128,7 @@ function renderConfigTags() {
                 data-index="${i}" style="${i === activeConfigIndex ? "background: var(--primary); color: white;" : ""}">
             ${cfg.name}
         </button>
-        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; display: flex; align-items: center; color: var(--text-muted);">
-          <i data-lucide="pencil" style="width: 14px; height: 14px;"></i>
-        </span>
+        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; font-size: 0.8rem;">✏️</span>
     </div>
   `,
     )
@@ -101,8 +148,6 @@ function renderConfigTags() {
       openEditor(idx);
     };
   });
-
-  refreshIcons();
 }
 
 function openEditor(index = -1) {
@@ -206,7 +251,6 @@ function setupDataListeners(uid) {
         tag.onclick = () => performSearch(tag.dataset.word);
       }
     });
-    refreshIcons();
   });
   dataUnsubscribers.push(historyUnsub);
 
@@ -224,7 +268,6 @@ function setupDataListeners(uid) {
         .forEach((tag) => {
           tag.onclick = () => performSearch(tag.dataset.word);
         });
-      refreshIcons();
     });
     dataUnsubscribers.push(favUnsub);
   } else {
@@ -276,9 +319,7 @@ function displayResults(data) {
 
       try {
         btn.disabled = true;
-        btn.innerHTML =
-          '<i data-lucide="loader-2" class="spin" style="width: 14px; height: 14px;"></i>';
-        refreshIcons();
+        btn.textContent = "⌛";
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
@@ -292,15 +333,12 @@ function displayResults(data) {
         resultDiv.classList.add("hidden");
       } finally {
         btn.disabled = false;
-        btn.innerHTML =
-          '<i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>';
-        refreshIcons();
+        btn.textContent = "🪄";
       }
     };
   });
 
   updateFavoriteButton();
-  refreshIcons();
   window.scrollTo({
     top: elements.resultsSection.offsetTop - 100,
     behavior: "smooth",
@@ -310,11 +348,8 @@ function displayResults(data) {
 function updateFavoriteButton() {
   if (!currentWordData) return;
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
-  elements.toggleFavBtn.innerHTML = isFav
-    ? '<i data-lucide="heart" style="fill: currentColor;"></i> Unfavorite'
-    : '<i data-lucide="star"></i> Favorite';
+  elements.toggleFavBtn.innerHTML = isFav ? "❤️ Unfavorite" : "⭐ Favorite";
   elements.toggleFavBtn.classList.toggle("btn-primary", isFav);
-  refreshIcons();
 }
 
 // --- Event Listeners ---

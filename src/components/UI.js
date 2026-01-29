@@ -10,10 +10,10 @@ export const renderWordResult = (data) => {
                 (def, i) => `
                  <div class="definition-item">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                         <p><strong>${i + 1}.</strong> ${def.definition}</p>
-                         <button class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" title="Translate with AI">
-                             <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
-                         </button>
+                        <p><strong>${i + 1}.</strong> ${def.definition}</p>
+                        <button class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" title="Translate with AI">
+                            🪄
+                        </button>
                     </div>
                     ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}
                     <div class="translation-result hidden" id="trans-${i}"></div>
