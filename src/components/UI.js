@@ -11,8 +11,10 @@ export const renderWordResult = (data) => {
                  <div class="definition-item">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <p><strong>${i + 1}.</strong> ${def.definition}</p>
-                        <button class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" title="Translate with AI">
-                            🪄
+                        <button type="button" class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" data-icon="icon-wand" title="Translate with AI" aria-label="Translate definition">
+                            <svg class="icon icon--sm" aria-hidden="true">
+                                <use href="/src/assets/icons/sprite.svg#icon-wand"></use>
+                            </svg>
                         </button>
                     </div>
                     ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}

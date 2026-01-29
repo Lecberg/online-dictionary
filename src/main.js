@@ -25,6 +25,13 @@ import {
   showToast,
 } from "./components/UI";
 
+const SPRITE_PATH = "/src/assets/icons/sprite.svg";
+
+const iconSvg = (symbolId, extraClasses = "") => {
+  const classes = ["icon", extraClasses].filter(Boolean).join(" ");
+  return `<svg class="${classes}" aria-hidden="true"><use href="${SPRITE_PATH}#${symbolId}"></use></svg>`;
+};
+
 // State
 let currentUser = null;
 let currentWordData = null;
@@ -123,14 +130,25 @@ function renderConfigTags() {
   elements.aiConfigItems.innerHTML = aiConfigs
     .map(
       (cfg, i) => `
-    <div class="config-tag-wrapper" style="display: flex; align-items: center; gap: 0.3rem;">
-        <button type="button" class="history-tag ${i === activeConfigIndex ? "active-config" : ""}" 
-                data-index="${i}" style="${i === activeConfigIndex ? "background: var(--primary); color: white;" : ""}">
+        <div class="config-tag-wrapper">
+          <button
+            type="button"
+            class="history-tag config-tag ${i === activeConfigIndex ? "active-config" : ""}"
+            data-index="${i}"
+            aria-pressed="${i === activeConfigIndex}"
+          >
             ${cfg.name}
-        </button>
-        <span class="edit-config-icon" data-index="${i}" style="cursor:pointer; font-size: 0.8rem;">✏️</span>
-    </div>
-  `,
+          </button>
+          <button
+            type="button"
+            class="icon-button edit-config-btn"
+            data-index="${i}"
+            aria-label="Edit ${cfg.name} configuration"
+          >
+            ${iconSvg("icon-pencil", "icon--sm")}
+          </button>
+        </div>
+      `,
     )
     .join("");
 
@@ -142,9 +160,9 @@ function renderConfigTags() {
     };
   });
 
-  document.querySelectorAll(".edit-config-icon").forEach((icon) => {
-    icon.onclick = () => {
-      const idx = parseInt(icon.dataset.index);
+  document.querySelectorAll(".edit-config-btn").forEach((iconBtn) => {
+    iconBtn.onclick = () => {
+      const idx = parseInt(iconBtn.dataset.index);
       openEditor(idx);
     };
   });
@@ -307,6 +325,7 @@ function displayResults(data) {
   elements.resultsSection.classList.remove("hidden");
 
   document.querySelectorAll(".translate-btn").forEach((btn, i) => {
+    const defaultIconId = btn.dataset.icon || "icon-wand";
     btn.onclick = async () => {
       const resultDiv = document.getElementById(`trans-${i}`);
       const originalText = btn.dataset.text;
@@ -319,7 +338,10 @@ function displayResults(data) {
 
       try {
         btn.disabled = true;
-        btn.textContent = "⌛";
+        btn.classList.add("is-loading");
+        btn
+          .querySelector("use")
+          ?.setAttribute("href", `${SPRITE_PATH}#icon-spinner`);
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
@@ -333,7 +355,10 @@ function displayResults(data) {
         resultDiv.classList.add("hidden");
       } finally {
         btn.disabled = false;
-        btn.textContent = "🪄";
+        btn.classList.remove("is-loading");
+        btn
+          .querySelector("use")
+          ?.setAttribute("href", `${SPRITE_PATH}#${defaultIconId}`);
       }
     };
   });
@@ -348,8 +373,12 @@ function displayResults(data) {
 function updateFavoriteButton() {
   if (!currentWordData) return;
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
-  elements.toggleFavBtn.innerHTML = isFav ? "❤️ Unfavorite" : "⭐ Favorite";
+  const iconId = isFav ? "icon-heart" : "icon-star";
+  const label = isFav ? "Unfavorite" : "Favorite";
+  elements.toggleFavBtn.innerHTML = `${iconSvg(iconId)}<span class="btn-label">${label}</span>`;
   elements.toggleFavBtn.classList.toggle("btn-primary", isFav);
+  elements.toggleFavBtn.classList.toggle("btn-outline", !isFav);
+  elements.toggleFavBtn.setAttribute("aria-pressed", isFav);
 }
 
 // --- Event Listeners ---

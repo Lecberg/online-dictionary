@@ -16,7 +16,14 @@
     <div class="app-container">
       <header>
         <div class="logo">
-          <h1><span>📚</span> Lexicon</h1>
+          <h1>
+            <span class="logo-icon" aria-hidden="true">
+              <svg class="icon icon--lg">
+                <use href="/src/assets/icons/sprite.svg#icon-book"></use>
+              </svg>
+            </span>
+            Lexicon
+          </h1>
         </div>
 
         <nav id="authNav" class="auth-nav">
@@ -33,7 +40,10 @@
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
             <button id="showSettingsBtn" class="btn btn-outline">
-              ⚙️ AI Settings
+              <svg class="icon" aria-hidden="true">
+                <use href="/src/assets/icons/sprite.svg#icon-gear"></use>
+              </svg>
+              <span class="btn-label">AI Settings</span>
             </button>
             <button id="logoutBtn" class="btn btn-outline">Logout</button>
           </div>
@@ -58,7 +68,11 @@
               class="search-input"
               placeholder="Search any word..."
             />
-            <span class="search-icon">🔍</span>
+            <span class="search-icon" aria-hidden="true">
+              <svg class="icon icon--sm">
+                <use href="/src/assets/icons/sprite.svg#icon-search"></use>
+              </svg>
+            </span>
             <button id="searchBtn" class="search-btn">Search</button>
           </div>
         </section>
@@ -74,8 +88,15 @@
               <h2 id="resWord"></h2>
               <span id="resPhonetic" class="phonetic"></span>
             </div>
-            <button id="toggleFavBtn" class="btn btn-outline">
-              ⭐ Favorite
+            <button
+              id="toggleFavBtn"
+              class="btn btn-outline"
+              aria-pressed="false"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use href="/src/assets/icons/sprite.svg#icon-star"></use>
+              </svg>
+              <span class="btn-label">Favorite</span>
             </button>
           </div>
           <div id="resMeanings"></div>
@@ -83,7 +104,12 @@
 
         <!-- History -->
         <section id="historySection">
-          <h3 class="section-title">⏱️ Recent Searches</h3>
+          <h3 class="section-title">
+            <svg class="icon icon--lg" aria-hidden="true">
+              <use href="/src/assets/icons/sprite.svg#icon-clock"></use>
+            </svg>
+            Recent Searches
+          </h3>
           <div id="historyList" class="history-grid">
             <p class="text-muted">Your history will appear here.</p>
           </div>
@@ -91,7 +117,12 @@
 
         <!-- Favorites -->
         <section id="favoritesSection">
-          <h3 class="section-title">⭐ Favorites</h3>
+          <h3 class="section-title">
+            <svg class="icon icon--lg" aria-hidden="true">
+              <use href="/src/assets/icons/sprite.svg#icon-star-solid"></use>
+            </svg>
+            Favorites
+          </h3>
           <div id="favoritesList" class="history-grid">
             <p class="text-muted">Sign in to save favorites.</p>
           </div>
@@ -185,6 +216,7 @@
       <div class="modal-content" style="position: relative; max-width: 500px">
         <button
           id="closeSettingsBtnTop"
+          aria-label="Close settings"
           style="
             position: absolute;
             top: 1rem;
@@ -196,10 +228,17 @@
             color: var(--text-muted);
           "
         >
-          &times;
+          <svg class="icon" aria-hidden="true">
+            <use href="/src/assets/icons/sprite.svg#icon-close"></use>
+          </svg>
         </button>
 
-        <h2 class="section-title">🤖 AI Translator Settings</h2>
+        <h2 class="section-title">
+          <svg class="icon icon--lg" aria-hidden="true">
+            <use href="/src/assets/icons/sprite.svg#icon-robot"></use>
+          </svg>
+          AI Translator Settings
+        </h2>
         <p
           style="
             font-size: 0.8rem;
