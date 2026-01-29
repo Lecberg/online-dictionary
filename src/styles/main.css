@@ -449,6 +449,22 @@ header {
   border: 1px solid var(--border);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
   animation: modalIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+}
+
+.modal-content--wide {
+  width: min(480px, calc(100vw - 2.5rem));
+  max-width: 480px;
+  padding: 2.5rem 2rem;
+}
+
+@media (max-width: 600px) {
+  .modal-content--wide {
+    width: calc(100vw - 1.5rem);
+    padding: 2rem 1.25rem 2.25rem;
+  }
 }
 
 @keyframes modalIn {
