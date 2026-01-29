@@ -72,6 +72,8 @@ const elements = {
   aiConfigItems: document.getElementById("aiConfigItems"),
   addNewConfigBtn: document.getElementById("addNewConfigBtn"),
   aiConfigEditor: document.getElementById("aiConfigEditor"),
+  aiEditorEmptyState: document.getElementById("aiEditorEmptyState"),
+  startNewConfigBtn: document.getElementById("startNewConfigBtn"),
   aiConfigName: document.getElementById("aiConfigName"),
   aiProtocol: document.getElementById("aiProtocol"),
   aiApiKey: document.getElementById("aiApiKey"),
@@ -79,6 +81,13 @@ const elements = {
   aiModel: document.getElementById("aiModel"),
   aiLanguage: document.getElementById("aiLanguage"),
   deleteConfigBtn: document.getElementById("deleteConfigBtn"),
+  aiEditorModeLabel: document.getElementById("aiEditorModeLabel"),
+  aiEditorTitle: document.getElementById("aiEditorTitle"),
+  aiEditorSubtitle: document.getElementById("aiEditorSubtitle"),
+  cancelEditorBtn: document.getElementById("cancelEditorBtn"),
+  aiSettingsMessage: document.getElementById("aiSettingsMessage"),
+  testAiConfigBtn: document.getElementById("testAiConfigBtn"),
+  activeConfigSummary: document.getElementById("activeConfigSummary"),
   closeSettingsBtn: document.getElementById("closeSettingsBtnTop"),
 
   googleLoginBtn: document.getElementById("googleLoginBtn"),
@@ -126,79 +135,178 @@ initWOD();
 
 // --- AI Configuration Management ---
 
+function setStatusMessage(message, type = "success") {
+  if (!message) {
+    elements.aiSettingsMessage.classList.add("hidden");
+    elements.aiSettingsMessage.textContent = "";
+    elements.aiSettingsMessage.classList.remove("error");
+    return;
+  }
+  elements.aiSettingsMessage.textContent = message;
+  elements.aiSettingsMessage.classList.toggle("error", type === "error");
+  elements.aiSettingsMessage.classList.remove("hidden");
+}
+
+function updateActiveSummary() {
+  if (activeConfigIndex < 0 || !aiConfigs[activeConfigIndex]) {
+    elements.activeConfigSummary.innerHTML = `
+      <p class="eyebrow-label">Active configuration</p>
+      <h3>No configuration selected</h3>
+      <p class="text-muted small-text">Select or create a configuration to translate definitions.</p>
+    `;
+    elements.testAiConfigBtn.disabled = true;
+    return;
+  }
+
+  const cfg = aiConfigs[activeConfigIndex];
+  elements.activeConfigSummary.innerHTML = `
+    <p class="eyebrow-label">Active configuration</p>
+    <h3>${cfg.name}</h3>
+    <p class="text-muted small-text">${cfg.protocol.toUpperCase()} • ${cfg.model || "Model not set"} • ${cfg.targetLanguage}</p>
+  `;
+  elements.testAiConfigBtn.disabled = false;
+}
+
 function renderConfigTags() {
+  if (!aiConfigs.length) {
+    elements.aiConfigItems.innerHTML = `<p class="text-muted">No providers saved yet.</p>`;
+    updateActiveSummary();
+    return;
+  }
+
   elements.aiConfigItems.innerHTML = aiConfigs
-    .map(
-      (cfg, i) => `
-        <div class="config-tag-wrapper">
-          <button
-            type="button"
-            class="history-tag config-tag ${i === activeConfigIndex ? "active-config" : ""}"
-            data-index="${i}"
-            aria-pressed="${i === activeConfigIndex}"
-          >
-            ${cfg.name}
-          </button>
-          <button
-            type="button"
-            class="icon-button edit-config-btn"
-            data-index="${i}"
-            aria-label="Edit ${cfg.name} configuration"
-          >
-            ${iconSvg("icon-pencil", "icon--sm")}
-          </button>
+    .map((cfg, i) => {
+      const isActive = i === activeConfigIndex;
+      return `
+        <div class="config-row ${isActive ? "active" : ""}">
+          <div class="config-meta">
+            <strong>${cfg.name}</strong>
+            <span class="small-text text-muted">${cfg.protocol.toUpperCase()} • ${cfg.targetLanguage}</span>
+          </div>
+          <div class="config-actions">
+            <button
+              type="button"
+              class="btn btn-outline btn-sm select-config-btn"
+              data-index="${i}"
+              ${isActive ? "aria-pressed='true'" : ""}
+            >
+              ${isActive ? "Active" : "Set active"}
+            </button>
+            <button
+              type="button"
+              class="icon-button edit-config-btn"
+              data-index="${i}"
+              aria-label="Edit ${cfg.name} configuration"
+            >
+              ${iconSvg("icon-pencil", "icon--sm")}
+            </button>
+          </div>
         </div>
-      `,
-    )
+      `;
+    })
     .join("");
 
-  document.querySelectorAll(".history-tag[data-index]").forEach((tag) => {
-    tag.onclick = () => {
-      activeConfigIndex = parseInt(tag.dataset.index);
+  document.querySelectorAll(".select-config-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const idx = parseInt(btn.dataset.index);
+      if (activeConfigIndex === idx) return;
+      activeConfigIndex = idx;
       renderConfigTags();
+      updateActiveSummary();
+      setStatusMessage(`Switched to ${aiConfigs[activeConfigIndex].name}`);
       showToast(`Switched to ${aiConfigs[activeConfigIndex].name}`, "success");
     };
   });
 
   document.querySelectorAll(".edit-config-btn").forEach((iconBtn) => {
-    iconBtn.onclick = () => {
+    iconBtn.onclick = (e) => {
+      e.stopPropagation();
       const idx = parseInt(iconBtn.dataset.index);
       openEditor(idx);
     };
   });
+
+  updateActiveSummary();
+}
+
+function toggleEditorVisibility(show) {
+  elements.aiConfigEditor.classList.toggle("hidden", !show);
+  elements.aiEditorEmptyState.classList.toggle("hidden", show);
 }
 
 function openEditor(index = -1) {
   currentEditingIndex = index;
-  elements.aiConfigEditor.classList.remove("hidden");
+  toggleEditorVisibility(true);
 
   if (index >= 0) {
     const cfg = aiConfigs[index];
     elements.aiConfigName.value = cfg.name;
     elements.aiProtocol.value = cfg.protocol;
-    elements.aiApiKey.value = ""; // Don't show existing key
+    elements.aiApiKey.value = "";
     elements.aiHost.value = cfg.host;
     elements.aiModel.value = cfg.model;
     elements.aiLanguage.value = cfg.targetLanguage;
     elements.deleteConfigBtn.classList.remove("hidden");
+    elements.aiEditorModeLabel.textContent = "Editing configuration";
+    elements.aiEditorTitle.textContent = cfg.name;
+    elements.aiEditorSubtitle.textContent = `${cfg.protocol.toUpperCase()} • ${cfg.targetLanguage}`;
   } else {
     elements.aiSettingsForm.reset();
     elements.deleteConfigBtn.classList.add("hidden");
+    elements.aiEditorModeLabel.textContent = "New configuration";
+    elements.aiEditorTitle.textContent = "Create AI preset";
+    elements.aiEditorSubtitle.textContent =
+      "Define provider details and language target";
   }
 }
 
+function closeEditor() {
+  currentEditingIndex = -1;
+  toggleEditorVisibility(false);
+  elements.aiSettingsForm.reset();
+}
+
 elements.addNewConfigBtn.onclick = () => openEditor(-1);
+elements.startNewConfigBtn.onclick = () => openEditor(-1);
+elements.cancelEditorBtn.onclick = closeEditor;
+
+elements.testAiConfigBtn.onclick = async () => {
+  if (activeConfigIndex === -1) {
+    setStatusMessage("Select a configuration first", "error");
+    return;
+  }
+
+  try {
+    elements.testAiConfigBtn.disabled = true;
+    elements.testAiConfigBtn.textContent = "Testing…";
+    await translateText(
+      "This is a test sentence.",
+      aiConfigs[activeConfigIndex],
+    );
+    setStatusMessage("Connection looks good!", "success");
+  } catch (err) {
+    setStatusMessage(err.message, "error");
+  } finally {
+    elements.testAiConfigBtn.textContent = "Test translation";
+    elements.testAiConfigBtn.disabled = false;
+  }
+};
 
 elements.deleteConfigBtn.onclick = async () => {
-  if (currentEditingIndex >= 0) {
-    aiConfigs.splice(currentEditingIndex, 1);
-    if (activeConfigIndex === currentEditingIndex) activeConfigIndex = -1;
-    else if (activeConfigIndex > currentEditingIndex) activeConfigIndex--;
+  if (currentEditingIndex < 0) return;
+  aiConfigs.splice(currentEditingIndex, 1);
+  if (activeConfigIndex === currentEditingIndex) activeConfigIndex = -1;
+  else if (activeConfigIndex > currentEditingIndex) activeConfigIndex--;
 
+  try {
     await saveAIConfigs(currentUser ? currentUser.uid : null, aiConfigs);
     renderConfigTags();
-    elements.aiConfigEditor.classList.add("hidden");
+    closeEditor();
+    setStatusMessage("Configuration deleted", "success");
     showToast("Configuration deleted", "info");
+  } catch (err) {
+    setStatusMessage(err.message, "error");
+    showToast(err.message, "error");
   }
 };
 
@@ -230,12 +338,18 @@ elements.aiSettingsForm.onsubmit = async (e) => {
   }
 
   try {
+    elements.aiSettingsForm.classList.add("is-submitting");
     await saveAIConfigs(currentUser ? currentUser.uid : null, aiConfigs);
     renderConfigTags();
-    elements.aiConfigEditor.classList.add("hidden");
+    updateActiveSummary();
+    closeEditor();
+    setStatusMessage("Configuration saved!", "success");
     showToast("Configuration saved!", "success");
   } catch (err) {
+    setStatusMessage(err.message, "error");
     showToast(err.message, "error");
+  } finally {
+    elements.aiSettingsForm.classList.remove("is-submitting");
   }
 };
 
@@ -408,11 +522,14 @@ elements.toLogin.onclick = (e) => {
 elements.showSettingsBtn.onclick = () => {
   renderConfigTags();
   elements.aiSettingsModal.classList.add("active");
+  document.body.classList.add("modal-open");
 };
 
 function closeAiSettingsModal() {
   elements.aiSettingsModal.classList.remove("active");
-  elements.aiConfigEditor.classList.add("hidden");
+  toggleEditorVisibility(false);
+  setStatusMessage("");
+  document.body.classList.remove("modal-open");
 }
 
 elements.closeSettingsBtn.onclick = closeAiSettingsModal;
