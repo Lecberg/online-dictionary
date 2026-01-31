@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
   <body>
+    <!-- Background particles -->
+    <div id="particles-container"></div>
+
     <div class="app-container">
       <header>
         <div class="logo">
@@ -52,39 +55,44 @@
 
       <main>
         <!-- Word of the Day -->
-        <section id="wordOfDay" class="wod-card">
-          <h2>Word of the Day</h2>
-          <div id="wodContent">
-            <p>Loading inspiration...</p>
+        <section id="wordOfDay" class="wod-card glass-card">
+          <div class="liquid-layer" id="wodLiquidLayer"></div>
+          <div class="card-content">
+            <h2>Word of the Day</h2>
+            <div id="wodContent">
+              <p>Loading inspiration...</p>
+            </div>
           </div>
         </section>
 
         <!-- Search -->
         <section class="search-area">
           <div class="search-box">
-            <input
-              type="text"
-              id="searchInput"
-              class="search-input"
-              placeholder="Search any word..."
-            />
-            <span class="search-icon" aria-hidden="true">
-              <svg class="icon icon--sm">
-                <use href="/src/assets/icons/sprite.svg#icon-search"></use>
-              </svg>
-            </span>
-            <div class="search-actions">
-              <button id="searchBtn" class="search-btn">Search</button>
-              <button
-                id="aiGenerateBtn"
-                class="search-btn ai-btn"
-                title="Generate meaning with AI"
-              >
-                <svg class="icon icon--sm" aria-hidden="true">
-                  <use href="/src/assets/icons/sprite.svg#icon-wand"></use>
+            <div class="search-glass-container">
+              <input
+                type="text"
+                id="searchInput"
+                class="search-input"
+                placeholder="Search any word..."
+              />
+              <span class="search-icon" aria-hidden="true">
+                <svg class="icon icon--sm">
+                  <use href="/src/assets/icons/sprite.svg#icon-search"></use>
                 </svg>
-                AI
-              </button>
+              </span>
+              <div class="search-actions">
+                <button id="searchBtn" class="search-btn">Search</button>
+                <button
+                  id="aiGenerateBtn"
+                  class="search-btn ai-btn"
+                  title="Generate meaning with AI"
+                >
+                  <svg class="icon icon--sm" aria-hidden="true">
+                    <use href="/src/assets/icons/sprite.svg#icon-wand"></use>
+                  </svg>
+                  AI
+                </button>
+              </div>
             </div>
           </div>
         </section>
@@ -94,24 +102,27 @@
         <div id="errorMsg" class="hidden"></div>
 
         <!-- Results -->
-        <section id="resultsSection" class="result-card hidden">
-          <div class="word-header">
-            <div class="word-meta">
-              <h2 id="resWord"></h2>
-              <span id="resPhonetic" class="phonetic"></span>
+        <section id="resultsSection" class="result-card glass-card hidden">
+          <div class="liquid-layer" id="resultsLiquidLayer"></div>
+          <div class="card-content">
+            <div class="word-header">
+              <div class="word-meta">
+                <h2 id="resWord"></h2>
+                <span id="resPhonetic" class="phonetic"></span>
+              </div>
+              <button
+                id="toggleFavBtn"
+                class="btn btn-outline"
+                aria-pressed="false"
+              >
+                <svg class="icon" aria-hidden="true">
+                  <use href="/src/assets/icons/sprite.svg#icon-star"></use>
+                </svg>
+                <span class="btn-label">Favorite</span>
+              </button>
             </div>
-            <button
-              id="toggleFavBtn"
-              class="btn btn-outline"
-              aria-pressed="false"
-            >
-              <svg class="icon" aria-hidden="true">
-                <use href="/src/assets/icons/sprite.svg#icon-star"></use>
-              </svg>
-              <span class="btn-label">Favorite</span>
-            </button>
+            <div id="resMeanings"></div>
           </div>
-          <div id="resMeanings"></div>
         </section>
 
         <!-- History -->
@@ -423,6 +434,7 @@
       </div>
     </div>
 
+    <script src="/src/liquid-effects.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

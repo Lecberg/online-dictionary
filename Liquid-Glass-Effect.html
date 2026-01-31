@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquid Glass Effect</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            padding: 40px;
+            z-index: 10;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+        
+        p {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 0 10px rgba(255, 255, 255, 0.2);
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Liquid effect elements */
+        .liquid-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            filter: blur(10px);
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(20px, -30px) scale(1.1);
+            }
+            50% {
+                transform: translate(-15px, -10px) scale(0.9);
+            }
+            75% {
+                transform: translate(10px, 20px) scale(1.05);
+            }
+        }
+        
+        /* Background particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.15);
+            animation: drift 20s infinite linear;
+        }
+        
+        @keyframes drift {
+            to {
+                transform: translateX(100vw) translateY(100vh) rotate(360deg);
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div id="particles"></div>
+    
+    <div class="container">
+        <h1>Liquid Glass Effect</h1>
+        <p>Experience the mesmerizing fusion of fluid dynamics and frosted glass aesthetics. Move your cursor around to interact with the liquid elements.</p>
+        
+        <div class="glass-card">
+            <div class="liquid-layer" id="liquidLayer"></div>
+            <div class="card-content">
+                <p>This card features a dynamic liquid glass effect created with CSS and JavaScript. The bubbles inside respond to your cursor movement, creating an immersive experience.</p>
+                <a href="#" class="btn">Explore More</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create background particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random properties
+            const size = Math.random() * 20 + 5;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const delay = Math.random() * 10;
+            const duration = Math.random() * 20 + 15;
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${posX}vw`;
+            particle.style.top = `${posY}vh`;
+            particle.style.animationDelay = `-${delay}s`;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.opacity = Math.random() * 0.5 + 0.1;
+            
+            particlesContainer.appendChild(particle);
+        }
+        
+        // Create liquid bubbles
+        const liquidLayer = document.getElementById('liquidLayer');
+        const bubbleCount = 15;
+        
+        for (let i = 0; i < bubbleCount; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            // Random properties
+            const size = Math.random() * 100 + 50;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const delay = Math.random() * 5;
+            const duration = Math.random() * 10 + 10;
+            
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${posX}%`;
+            bubble.style.top = `${posY}%`;
+            bubble.style.animationDelay = `-${delay}s`;
+            bubble.style.animationDuration = `${duration}s`;
+            bubble.style.opacity = Math.random() * 0.3 + 0.1;
+            
+            liquidLayer.appendChild(bubble);
+        }
+        
+        // Mouse interaction effect
+        document.addEventListener('mousemove', (e) => {
+            const bubbles = document.querySelectorAll('.bubble');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            bubbles.forEach(bubble => {
+                const speed = 0.05;
+                const moveX = (x - 0.5) * speed * 100;
+                const moveY = (y - 0.5) * speed * 100;
+                
+                bubble.style.transform = `translate(${moveX}px, ${moveY}px) scale(${1 + (x * 0.1)})`;
+            });
+            
+            // Parallax effect on card
+            const card = document.querySelector('.glass-card');
+            const cardRect = card.getBoundingClientRect();
+            const cardX = (e.clientX - cardRect.left) / cardRect.width;
+            const cardY = (e.clientY - cardRect.top) / cardRect.height;
+            
+            const rotateX = (cardY - 0.5) * 10;
+            const rotateY = (0.5 - cardX) * 10;
+            
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        
+        // Reset card transform when mouse leaves
+        document.addEventListener('mouseleave', () => {
+            const card = document.querySelector('.glass-card');
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+        });
+    </script>
+</body>
+</html>
