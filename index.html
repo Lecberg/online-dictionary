@@ -10,8 +10,8 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="./assets/index-yBSUZn3Z.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-SlgAwZxq.css">
+    <script type="module" crossorigin src="./assets/index-CF-JHxHW.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DKDtLek8.css">
   </head>
   <body>
     <!-- Background particles -->
@@ -23,7 +23,7 @@
           <h1>
             <span class="logo-icon" aria-hidden="true">
               <svg class="icon icon--lg">
-                <use href="./assets/sprite-CNjv0feQ.svg#icon-book"></use>
+                <use href="./assets/sprite-BqjqWWQK.svg#icon-book"></use>
               </svg>
             </span>
             Lexicon
@@ -43,9 +43,21 @@
           <div id="userView" class="user-info hidden">
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
+            <button
+              id="themeToggleBtn"
+              class="btn btn-outline"
+              title="Switch theme"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use
+                  id="themeIcon"
+                  href="./assets/sprite-BqjqWWQK.svg#icon-sun"
+                ></use>
+              </svg>
+            </button>
             <button id="showSettingsBtn" class="btn btn-outline">
               <svg class="icon" aria-hidden="true">
-                <use href="./assets/sprite-CNjv0feQ.svg#icon-gear"></use>
+                <use href="./assets/sprite-BqjqWWQK.svg#icon-gear"></use>
               </svg>
               <span class="btn-label">AI Settings</span>
             </button>
@@ -63,6 +75,19 @@
             <div id="wodContent">
               <p>Loading inspiration...</p>
             </div>
+            <button
+              id="themeToggleGuestBtn"
+              class="btn btn-outline"
+              title="Switch theme"
+              style="position: absolute; top: 1rem; right: 1rem"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use
+                  id="themeIconGuest"
+                  href="./assets/sprite-BqjqWWQK.svg#icon-sun"
+                ></use>
+              </svg>
+            </button>
           </div>
         </section>
 
@@ -78,7 +103,7 @@
               />
               <span class="search-icon" aria-hidden="true">
                 <svg class="icon icon--sm">
-                  <use href="./assets/sprite-CNjv0feQ.svg#icon-search"></use>
+                  <use href="./assets/sprite-BqjqWWQK.svg#icon-search"></use>
                 </svg>
               </span>
               <div class="search-actions">
@@ -89,7 +114,7 @@
                   title="Generate meaning with AI"
                 >
                   <svg class="icon icon--sm" aria-hidden="true">
-                    <use href="./assets/sprite-CNjv0feQ.svg#icon-wand"></use>
+                    <use href="./assets/sprite-BqjqWWQK.svg#icon-wand"></use>
                   </svg>
                   AI
                 </button>
@@ -117,7 +142,7 @@
                 aria-pressed="false"
               >
                 <svg class="icon" aria-hidden="true">
-                  <use href="./assets/sprite-CNjv0feQ.svg#icon-star"></use>
+                  <use href="./assets/sprite-BqjqWWQK.svg#icon-star"></use>
                 </svg>
                 <span class="btn-label">Favorite</span>
               </button>
@@ -130,7 +155,7 @@
         <section id="historySection">
           <h3 class="section-title">
             <svg class="icon icon--lg" aria-hidden="true">
-              <use href="./assets/sprite-CNjv0feQ.svg#icon-clock"></use>
+              <use href="./assets/sprite-BqjqWWQK.svg#icon-clock"></use>
             </svg>
             Recent Searches
           </h3>
@@ -143,7 +168,7 @@
         <section id="favoritesSection">
           <h3 class="section-title">
             <svg class="icon icon--lg" aria-hidden="true">
-              <use href="./assets/sprite-CNjv0feQ.svg#icon-star-solid"></use>
+              <use href="./assets/sprite-BqjqWWQK.svg#icon-star-solid"></use>
             </svg>
             Favorites
           </h3>
@@ -245,14 +270,14 @@
           aria-label="Close settings"
         >
           <svg class="icon" aria-hidden="true">
-            <use href="./assets/sprite-CNjv0feQ.svg#icon-close"></use>
+            <use href="./assets/sprite-BqjqWWQK.svg#icon-close"></use>
           </svg>
         </button>
 
         <div class="ai-modal-body">
           <h2 class="section-title">
             <svg class="icon icon--lg" aria-hidden="true">
-              <use href="./assets/sprite-CNjv0feQ.svg#icon-robot"></use>
+              <use href="./assets/sprite-BqjqWWQK.svg#icon-robot"></use>
             </svg>
             AI Translator Settings
           </h2>
@@ -315,7 +340,7 @@
             <section class="ai-editor-panel" aria-live="polite">
               <div id="aiEditorEmptyState" class="editor-empty">
                 <svg class="icon icon--lg" aria-hidden="true">
-                  <use href="./assets/sprite-CNjv0feQ.svg#icon-wand"></use>
+                  <use href="./assets/sprite-BqjqWWQK.svg#icon-wand"></use>
                 </svg>
                 <h3>Plan your translator</h3>
                 <p>
@@ -436,5 +461,6 @@
     </div>
 
     <script src="/src/liquid-effects.js"></script>
+    <script src="/src/theme.js"></script>
   </body>
 </html>
