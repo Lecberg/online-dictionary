@@ -42,6 +42,18 @@
           <div id="userView" class="user-info hidden">
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
+            <button
+              id="themeToggleBtn"
+              class="btn btn-outline"
+              title="Switch theme"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use
+                  id="themeIcon"
+                  href="/src/assets/icons/sprite.svg#icon-sun"
+                ></use>
+              </svg>
+            </button>
             <button id="showSettingsBtn" class="btn btn-outline">
               <svg class="icon" aria-hidden="true">
                 <use href="/src/assets/icons/sprite.svg#icon-gear"></use>
@@ -62,6 +74,19 @@
             <div id="wodContent">
               <p>Loading inspiration...</p>
             </div>
+            <button
+              id="themeToggleGuestBtn"
+              class="btn btn-outline"
+              title="Switch theme"
+              style="position: absolute; top: 1rem; right: 1rem"
+            >
+              <svg class="icon" aria-hidden="true">
+                <use
+                  id="themeIconGuest"
+                  href="/src/assets/icons/sprite.svg#icon-sun"
+                ></use>
+              </svg>
+            </button>
           </div>
         </section>
 
@@ -435,6 +460,7 @@
     </div>
 
     <script src="/src/liquid-effects.js"></script>
+    <script src="/src/theme.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
