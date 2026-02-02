@@ -16,6 +16,14 @@ const SPRITE_PATH = "/src/assets/icons/sprite.svg";
   }
 })();
 
+// Global toggle function for onclick handlers
+window.toggleTheme = function () {
+  const isLight = document.body.classList.contains("light-mode");
+  const newTheme = isLight ? "dark" : "light";
+  applyTheme(newTheme);
+  localStorage.setItem(THEME_KEY, newTheme);
+};
+
 function initTheme() {
   if (window.__themeInit) return;
   window.__themeInit = true;
@@ -29,10 +37,7 @@ function initTheme() {
     if (btn) {
       e.preventDefault();
       e.stopPropagation();
-      const isLight = document.body.classList.contains("light-mode");
-      const newTheme = isLight ? "dark" : "light";
-      applyTheme(newTheme);
-      localStorage.setItem(THEME_KEY, newTheme);
+      window.toggleTheme();
     }
   });
 }
