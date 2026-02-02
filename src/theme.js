@@ -23,10 +23,12 @@ function initTheme() {
   const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
   applyTheme(savedTheme);
 
-  // Use event delegation on document.body for robustness
-  document.body.addEventListener("click", (e) => {
+  // Use event delegation on document for robustness (catches clicks outside body too)
+  document.addEventListener("click", (e) => {
     const btn = e.target.closest(".theme-toggle-btn");
     if (btn) {
+      e.preventDefault();
+      e.stopPropagation();
       const isLight = document.body.classList.contains("light-mode");
       const newTheme = isLight ? "dark" : "light";
       applyTheme(newTheme);
