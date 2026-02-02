@@ -26,7 +26,7 @@ import {
   showToast,
 } from "./components/UI";
 
-const SPRITE_PATH = "/src/assets/icons/sprite.svg";
+const SPRITE_PATH = "./src/assets/icons/sprite.svg";
 
 const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");

@@ -13,7 +13,7 @@ export const renderWordResult = (data) => {
                         <p><strong>${i + 1}.</strong> ${def.definition}</p>
                         <button type="button" class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" data-icon="icon-wand" title="Translate with AI" aria-label="Translate definition">
                             <svg class="icon icon--sm" aria-hidden="true">
-                                <use href="/src/assets/icons/sprite.svg#icon-wand"></use>
+                                <use href="./src/assets/icons/sprite.svg#icon-wand"></use>
                             </svg>
                         </button>
                     </div>
@@ -88,7 +88,7 @@ export const renderAIResult = (word, definition, configName) => {
         <div class="ai-generated-section">
             <div class="ai-badge">
                 <svg class="icon icon--sm" aria-hidden="true">
-                    <use href="/src/assets/icons/sprite.svg#icon-robot"></use>
+                    <use href="./src/assets/icons/sprite.svg#icon-robot"></use>
                 </svg>
                 AI Generated (${configName})
             </div>

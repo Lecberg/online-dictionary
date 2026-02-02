@@ -4,7 +4,7 @@
  */
 
 const THEME_KEY = "lexicon-theme";
-const SPRITE_PATH = "/src/assets/icons/sprite.svg";
+const SPRITE_PATH = "./src/assets/icons/sprite.svg";
 
 // Apply class immediately to prevent flash of un-themed content
 (function () {
