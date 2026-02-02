@@ -10,7 +10,25 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <script type="module" crossorigin src="./assets/index-BLzDsdCP.js"></script>
+
+    <script>
+      // Global path helper for GitHub Pages subdirectory
+      window.APP_BASE_PATH = window.location.pathname.includes(
+        "/online-dictionary",
+      )
+        ? "/online-dictionary/"
+        : "/";
+    </script>
+    <script type="importmap">
+      {
+        "imports": {
+          "firebase/app": "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js",
+          "firebase/auth": "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js",
+          "firebase/firestore": "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+        }
+      }
+    </script>
+    <script type="module" crossorigin src="./assets/index-ChJhBYlr.js"></script>
     <link rel="stylesheet" crossorigin href="./assets/index-DdxoTfDa.css">
   </head>
   <body>
@@ -23,7 +41,6 @@
       class="btn btn-outline theme-toggle-btn theme-toggle-fixed"
       title="Switch theme"
       aria-label="Toggle dark/light theme"
-      onclick="window.toggleTheme && window.toggleTheme()"
     >
       <svg class="icon" aria-hidden="true">
         <use
