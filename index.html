@@ -16,6 +16,21 @@
     <!-- Background particles -->
     <div id="particles-container"></div>
 
+    <!-- Theme Toggle - Fixed to upper right corner -->
+    <button
+      id="themeToggleBtn"
+      class="btn btn-outline theme-toggle-btn theme-toggle-fixed"
+      title="Switch theme"
+      aria-label="Toggle dark/light theme"
+    >
+      <svg class="icon" aria-hidden="true">
+        <use
+          class="theme-icon-use"
+          href="/src/assets/icons/sprite.svg#icon-sun"
+        ></use>
+      </svg>
+    </button>
+
     <div class="app-container">
       <header>
         <div class="logo">
@@ -32,18 +47,6 @@
         <nav id="authNav" class="auth-nav">
           <!-- Guest View -->
           <div id="guestView" class="auth-nav">
-            <button
-              id="themeToggleGuestHeaderBtn"
-              class="btn btn-outline theme-toggle-btn"
-              title="Switch theme"
-            >
-              <svg class="icon" aria-hidden="true">
-                <use
-                  class="theme-icon-use"
-                  href="/src/assets/icons/sprite.svg#icon-sun"
-                ></use>
-              </svg>
-            </button>
             <button id="showLoginBtn" class="btn btn-outline">Log In</button>
             <button id="showRegisterBtn" class="btn btn-primary">
               Sign Up
@@ -54,18 +57,6 @@
           <div id="userView" class="user-info hidden">
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
-            <button
-              id="themeToggleBtn"
-              class="btn btn-outline theme-toggle-btn"
-              title="Switch theme"
-            >
-              <svg class="icon" aria-hidden="true">
-                <use
-                  class="theme-icon-use"
-                  href="/src/assets/icons/sprite.svg#icon-sun"
-                ></use>
-              </svg>
-            </button>
             <button id="showSettingsBtn" class="btn btn-outline">
               <svg class="icon" aria-hidden="true">
                 <use href="/src/assets/icons/sprite.svg#icon-gear"></use>
@@ -86,19 +77,6 @@
             <div id="wodContent">
               <p>Loading inspiration...</p>
             </div>
-            <button
-              id="themeToggleGuestBtn"
-              class="btn btn-outline theme-toggle-btn"
-              title="Switch theme"
-              style="position: absolute; top: 1rem; right: 1rem"
-            >
-              <svg class="icon" aria-hidden="true">
-                <use
-                  class="theme-icon-use"
-                  href="/src/assets/icons/sprite.svg#icon-sun"
-                ></use>
-              </svg>
-            </button>
           </div>
         </section>
 

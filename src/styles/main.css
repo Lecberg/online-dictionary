@@ -130,6 +130,8 @@ body {
   display: inline-block;
   flex-shrink: 0;
   color: currentColor;
+  position: relative;
+  z-index: 3;
 }
 
 .icon--sm {
@@ -140,6 +142,100 @@ body {
 .icon--lg {
   width: 1.75rem;
   height: 1.75rem;
+}
+
+/* Ensure icons are visible in glass card contexts */
+.glass-card .icon,
+.modal-content .icon,
+header .icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+/* Fixed theme toggle button - upper right corner */
+.theme-toggle-fixed {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: var(--glass-border);
+  box-shadow: var(--shadow);
+  padding: 0.75rem;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-toggle-fixed:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: scale(1.1);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+}
+
+body.light-mode .theme-toggle-fixed {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .theme-toggle-fixed:hover {
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Responsive adjustment for smaller screens */
+@media (max-width: 768px) {
+  .theme-toggle-fixed {
+    top: 1rem;
+    right: 1rem;
+    width: 44px;
+    height: 44px;
+    padding: 0.6rem;
+  }
+}
+
+body.light-mode .glass-card .icon,
+body.light-mode .modal-content .icon,
+body.light-mode header .icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  color: var(--text-main);
+}
+
+/* Specific fixes for buttons with icons */
+.btn .icon,
+.search-btn .icon,
+.modal-close-btn .icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  position: relative;
+  z-index: 4;
+}
+
+/* Icon buttons need extra visibility */
+.icon-button .icon,
+.translate-btn .icon {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  stroke-width: 2.2;
+}
+
+/* Ensure SVG use elements inherit properly */
+svg.icon use {
+  color: inherit;
+  fill: currentColor;
+}
+
+/* Star icon specific fix */
+#toggleFavBtn .icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+}
+
+/* Close button icon enhancement */
+.modal-close-btn .icon {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
+  stroke-width: 2.5;
 }
 
 .app-container {
@@ -182,6 +278,12 @@ body {
   filter: blur(10px);
   animation: float 15s infinite ease-in-out;
   pointer-events: none;
+  z-index: 1;
+}
+
+/* Reduce bubble opacity in light mode for better content visibility */
+body.light-mode .bubble {
+  opacity: 0.4 !important;
 }
 
 @keyframes float {
@@ -202,7 +304,16 @@ body {
 
 .card-content {
   position: relative;
-  z-index: 2;
+  z-index: 5;
+}
+
+/* Ensure all interactive elements inside card-content are above bubbles */
+.card-content .btn,
+.card-content button,
+.card-content .icon,
+.card-content svg {
+  position: relative;
+  z-index: 6;
 }
 
 header {
@@ -604,15 +715,25 @@ header {
 .icon-button,
 .translate-btn {
   border: none;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   color: var(--text-main);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem;
+  padding: 0.35rem;
   border-radius: 999px;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 10;
+}
+
+/* Light mode adjustments for icon buttons */
+body.light-mode .icon-button,
+body.light-mode .translate-btn {
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--text-main);
 }
 
 .icon-button:hover,
@@ -1093,18 +1214,23 @@ header {
   position: absolute;
   top: -12px;
   right: 20px;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
   padding: 0.3rem 1rem;
   border-radius: 50px;
-  border: 1px solid rgba(6, 182, 212, 0.5);
+  border: 1px solid rgba(6, 182, 212, 0.6);
   color: var(--text-main);
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(8px);
+  z-index: 10;
+}
+
+.ai-badge .icon {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
 }
 
 .ai-content {
