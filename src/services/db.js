@@ -5,13 +5,14 @@ import {
   deleteDoc,
   collection,
   query,
+  where,
   orderBy,
   limit,
   onSnapshot,
   serverTimestamp,
   getDocs,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db } from "./firebase.js";
 
 /**
  * Local Storage Helpers for Guest Users

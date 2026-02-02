@@ -5,7 +5,7 @@ import {
   loginWithEmail,
   registerWithEmail,
   logout,
-} from "./services/auth";
+} from "./services/auth.js";
 import {
   saveToHistory,
   listenToHistory,
@@ -15,22 +15,23 @@ import {
   syncHistoryToCloud,
   saveAIConfigs,
   getAIConfigs,
-} from "./services/db";
-import { fetchWordData } from "./services/dictionary";
-import { translateText, generateWordDefinition } from "./services/ai";
+} from "./services/db.js";
+import { fetchWordData } from "./services/dictionary.js";
+import { translateText, generateWordDefinition } from "./services/ai.js";
 import {
   renderWordResult,
   renderAIResult,
   renderHistoryItem,
   renderWOD,
   showToast,
-} from "./components/UI";
+} from "./components/UI.js";
 
-const SPRITE_PATH = "./src/assets/icons/sprite.svg";
+const getSpritePath = () =>
+  `${window.APP_BASE_PATH || "./"}src/assets/icons/sprite.svg`;
 
 const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");
-  return `<svg class="${classes}" aria-hidden="true"><use href="${SPRITE_PATH}#${symbolId}"></use></svg>`;
+  return `<svg class="${classes}" aria-hidden="true"><use href="${getSpritePath()}#${symbolId}"></use></svg>`;
 };
 
 // State

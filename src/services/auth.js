@@ -6,7 +6,7 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { auth, googleProvider, githubProvider } from "./firebase";
+import { auth, googleProvider, githubProvider } from "./firebase.js";
 
 export const loginWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const loginWithGithub = () => signInWithPopup(auth, githubProvider);
