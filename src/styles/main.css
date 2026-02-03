@@ -1,29 +1,4 @@
 :root {
-  --primary: #06b6d4;
-  --primary-hover: #0891b2;
-  --secondary: #3b82f6;
-  --accent: #0ea5e9;
-  --background: #0f172a;
-  --surface: rgba(255, 255, 255, 0.15);
-  --surface-hover: rgba(255, 255, 255, 0.25);
-  --text-main: #ffffff;
-  --text-muted: rgba(255, 255, 255, 0.8);
-  --border: rgba(255, 255, 255, 0.18);
-  --error: #ef4444;
-  --success: #10b981;
-  --radius: 20px;
-  --shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.2);
-  --glass-blur: blur(12px);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.18);
-  --bubble-bg: rgba(6, 182, 212, 0.1);
-  --particle-bg: rgba(59, 130, 246, 0.15);
-  --bg-gradient: linear-gradient(135deg, #0f172a, #1e40af, #0f172a);
-  --text-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-  --on-primary: #ffffff;
-}
-
-body.light-mode {
   --primary: #0891b2;
   --primary-hover: #0e7490;
   --secondary: #2563eb;
@@ -42,26 +17,6 @@ body.light-mode {
   --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
   --text-shadow: none;
   --on-primary: #ffffff;
-}
-
-body.light-mode {
-  --primary: #0891b2;
-  --primary-hover: #0e7490;
-  --secondary: #2563eb;
-  --accent: #0284c7;
-  --background: #f8fafc;
-  --surface: rgba(255, 255, 255, 0.6);
-  --surface-hover: rgba(255, 255, 255, 0.8);
-  --text-main: #0f172a;
-  --text-muted: #475569;
-  --border: rgba(0, 0, 0, 0.1);
-  --shadow:
-    0 8px 32px rgba(0, 0, 0, 0.1), inset 0 0 10px rgba(255, 255, 255, 0.5);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
-  --bubble-bg: rgba(6, 182, 212, 0.05);
-  --particle-bg: rgba(59, 130, 246, 0.08);
-  --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
-  --text-shadow: none;
 }
 
 * {
@@ -151,61 +106,7 @@ header .icon {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
 }
 
-/* Fixed theme toggle button - upper right corner */
-.theme-toggle-fixed {
-  position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 10000 !important;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: var(--glass-border);
-  box-shadow: var(--shadow);
-  padding: 0.75rem;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
-  cursor: pointer;
-}
-
-.theme-toggle-fixed:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: scale(1.1);
-  box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
-}
-
-body.light-mode .theme-toggle-fixed {
-  background: rgba(255, 255, 255, 0.6);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .theme-toggle-fixed:hover {
-  background: rgba(255, 255, 255, 0.8);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
-}
-
-/* Responsive adjustment for smaller screens */
-@media (max-width: 768px) {
-  .theme-toggle-fixed {
-    top: 1rem;
-    right: 1rem;
-    width: 44px;
-    height: 44px;
-    padding: 0.6rem;
-  }
-}
-
-body.light-mode .glass-card .icon,
-body.light-mode .modal-content .icon,
-body.light-mode header .icon {
-  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
-  color: var(--text-main);
-}
+/* Fixed theme toggle button removed */
 
 /* Specific fixes for buttons with icons */
 .btn .icon,
@@ -281,11 +182,7 @@ svg.icon use {
   animation: float 15s infinite ease-in-out;
   pointer-events: none;
   z-index: 1;
-}
-
-/* Reduce bubble opacity in light mode for better content visibility */
-body.light-mode .bubble {
-  opacity: 0.4 !important;
+  opacity: 0.4;
 }
 
 @keyframes float {
@@ -717,7 +614,7 @@ header {
 .icon-button,
 .translate-btn {
   border: none;
-  background: rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.1);
   color: var(--text-main);
   display: inline-flex;
   align-items: center;
@@ -729,13 +626,6 @@ header {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   position: relative;
   z-index: 10;
-}
-
-/* Light mode adjustments for icon buttons */
-body.light-mode .icon-button,
-body.light-mode .translate-btn {
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--text-main);
 }
 
 .icon-button:hover,
@@ -818,10 +708,6 @@ body.light-mode .translate-btn {
 .modal-content input:focus {
   background: var(--surface-hover);
   border-color: var(--primary);
-}
-
-#themeToggleGuestBtn {
-  z-index: 100;
 }
 
 .modal-content input::placeholder {
