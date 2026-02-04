@@ -1,9 +1,22 @@
-const getSpritePath = () =>
-  `${window.APP_BASE_PATH || "./"}src/assets/icons/sprite.svg`;
+const getSpritePath = () => {
+  const base = window.APP_BASE_PATH || "./";
+  const sanitizedBase = base.endsWith("/") ? base : `${base}/`;
+  return `${sanitizedBase}src/assets/icons/sprite.svg`;
+};
+
+const iconSvg = (symbolId, extraClasses = "") => {
+  const classes = ["icon", extraClasses].filter(Boolean).join(" ");
+  const spritePath = getSpritePath();
+  const fullPath = `${spritePath}#${symbolId}`;
+  return `
+    <svg class="${classes}" aria-hidden="true">
+      <use href="${fullPath}" xlink:href="${fullPath}"></use>
+    </svg>
+  `.trim();
+};
 
 export const renderWordResult = (data) => {
   const wordData = data[0];
-  const spritePath = getSpritePath();
   return wordData.meanings
     .map(
       (meaning) => `
@@ -16,9 +29,7 @@ export const renderWordResult = (data) => {
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <p><strong>${i + 1}.</strong> ${def.definition}</p>
                         <button type="button" class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" data-icon="icon-wand" title="Translate with AI" aria-label="Translate definition">
-                            <svg class="icon icon--sm" aria-hidden="true">
-                                <use href="${spritePath}#icon-wand"></use>
-                            </svg>
+                            ${iconSvg("icon-wand", "icon--sm")}
                         </button>
                     </div>
                     ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}
@@ -32,6 +43,45 @@ export const renderWordResult = (data) => {
     `,
     )
     .join("");
+};
+
+// ... keep existing parseMarkdown ...
+
+export const renderAIResult = (word, definition, configName) => {
+  return `
+        <div class="ai-generated-section">
+            <div class="ai-badge">
+                ${iconSvg("icon-robot", "icon--sm")}
+                AI Generated (${configName})
+            </div>
+            <div class="ai-content markdown-body">
+                ${parseMarkdown(definition)}
+            </div>
+        </div>
+    `;
+};
+
+export const renderHistoryItem = (item) => {
+  return `
+    <button class="history-tag" data-word="${item.word}">
+      ${iconSvg("icon-clock", "icon--sm")}
+      ${item.word}
+    </button>
+  `;
+};
+
+export const renderWOD = (wordData) => {
+  const word = wordData[0];
+  const definition = word.meanings[0].definitions[0].definition;
+
+  return `
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">${word.word}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">${definition}</p>
+        <button class="btn btn-outline" id="viewWodBtn" data-word="${word.word}">
+          ${iconSvg("icon-book", "icon--sm")}
+          Read Full Entry
+        </button>
+    `;
 };
 
 // Simple markdown parser

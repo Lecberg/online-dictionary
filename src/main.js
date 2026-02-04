@@ -26,12 +26,22 @@ import {
   showToast,
 } from "./components/UI.js";
 
-const getSpritePath = () =>
-  `${window.APP_BASE_PATH || "./"}src/assets/icons/sprite.svg`;
+const getSpritePath = () => {
+  const base = window.APP_BASE_PATH || "./";
+  // Ensure we don't end up with // if base is /
+  const sanitizedBase = base.endsWith("/") ? base : `${base}/`;
+  return `${sanitizedBase}src/assets/icons/sprite.svg`;
+};
 
 const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");
-  return `<svg class="${classes}" aria-hidden="true"><use href="${getSpritePath()}#${symbolId}"></use></svg>`;
+  const spritePath = getSpritePath();
+  const fullPath = `${spritePath}#${symbolId}`;
+  return `
+    <svg class="${classes}" aria-hidden="true">
+      <use href="${fullPath}" xlink:href="${fullPath}"></use>
+    </svg>
+  `.trim();
 };
 
 // State
@@ -520,7 +530,7 @@ function displayResults(data) {
         btn.classList.add("is-loading");
         btn
           .querySelector("use")
-          ?.setAttribute("href", `${SPRITE_PATH}#icon-spinner`);
+          ?.setAttribute("href", `${getSpritePath()}#icon-spinner`);
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
@@ -537,7 +547,7 @@ function displayResults(data) {
         btn.classList.remove("is-loading");
         btn
           .querySelector("use")
-          ?.setAttribute("href", `${SPRITE_PATH}#${defaultIconId}`);
+          ?.setAttribute("href", `${getSpritePath()}#${defaultIconId}`);
       }
     };
   });
