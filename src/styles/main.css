@@ -571,6 +571,15 @@ header {
   box-shadow: 0 0 15px var(--primary);
 }
 
+.history-tag--history .icon {
+  stroke: var(--primary);
+}
+
+.history-tag--favorite .icon {
+  fill: var(--primary);
+  stroke: none;
+}
+
 .config-tag-wrapper {
   display: flex;
   align-items: center;

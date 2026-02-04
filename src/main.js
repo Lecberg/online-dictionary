@@ -371,7 +371,9 @@ function updateAuthUI() {
 function setupDataListeners(uid) {
   const historyUnsub = listenToHistory(uid, (history) => {
     elements.historyList.innerHTML = history.length
-      ? history.map((item) => renderHistoryItem(item)).join("")
+      ? history
+          .map((item) => renderHistoryItem(item, "icon-clock", "history"))
+          .join("")
       : '<p class="text-muted">No recent searches.</p>';
 
     document.querySelectorAll(".history-tag").forEach((tag) => {
@@ -384,7 +386,9 @@ function setupDataListeners(uid) {
     const favUnsub = listenToFavorites(uid, (favorites) => {
       favoriteWords = favorites.map((f) => f.word.toLowerCase());
       elements.favoritesList.innerHTML = favorites.length
-        ? favorites.map((item) => renderHistoryItem(item)).join("")
+        ? favorites
+            .map((item) => renderHistoryItem(item, "icon-heart", "favorite"))
+            .join("")
         : '<p class="text-muted">No favorites yet.</p>';
 
       updateFavoriteButton();

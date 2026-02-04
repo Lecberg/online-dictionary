@@ -60,10 +60,15 @@ export const renderAIResult = (word, definition, configName) => {
     `;
 };
 
-export const renderHistoryItem = (item) => {
+export const renderHistoryItem = (
+  item,
+  iconSymbol = "icon-clock",
+  cssVariant = "",
+) => {
+  const variantClass = cssVariant ? ` history-tag--${cssVariant}` : "";
   return `
-    <button class="history-tag" data-word="${item.word}">
-      ${iconSvg("icon-clock", "icon--sm")}
+    <button class="history-tag${variantClass}" data-word="${item.word}">
+      ${iconSvg(iconSymbol, "icon--sm")}
       ${item.word}
     </button>
   `;
