@@ -137,38 +137,6 @@ const parseMarkdown = (text) => {
   return html;
 };
 
-export const renderAIResult = (word, definition, configName) => {
-  const spritePath = getSpritePath();
-  return `
-        <div class="ai-generated-section">
-            <div class="ai-badge">
-                <svg class="icon icon--sm" aria-hidden="true">
-                    <use href="${spritePath}#icon-robot"></use>
-                </svg>
-                AI Generated (${configName})
-            </div>
-            <div class="ai-content markdown-body">
-                ${parseMarkdown(definition)}
-            </div>
-        </div>
-    `;
-};
-
-export const renderHistoryItem = (item) => {
-  return `<button class="history-tag" data-word="${item.word}">${item.word}</button>`;
-};
-
-export const renderWOD = (wordData) => {
-  const word = wordData[0];
-  const definition = word.meanings[0].definitions[0].definition;
-
-  return `
-        <h3 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; margin-bottom: 0.5rem;">${word.word}</h3>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1.1rem;">${definition}</p>
-        <button class="btn btn-outline" id="viewWodBtn" data-word="${word.word}">Read Full Entry</button>
-    `;
-};
-
 export const showToast = (message, type = "info") => {
   const toast = document.createElement("div");
   toast.style.cssText = `
