@@ -127,7 +127,6 @@ header .icon {
 /* Ensure SVG use elements inherit properly */
 svg.icon use {
   color: inherit;
-  fill: inherit;
 }
 
 /* Star icon specific fix */

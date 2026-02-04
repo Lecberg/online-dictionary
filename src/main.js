@@ -25,13 +25,9 @@ import {
   renderWOD,
   showToast,
 } from "./components/UI.js";
+import spriteUrl from "./assets/icons/sprite.svg";
 
-const getSpritePath = () => {
-  const base = window.APP_BASE_PATH || "./";
-  // Ensure we don't end up with // if base is /
-  const sanitizedBase = base.endsWith("/") ? base : `${base}/`;
-  return `${sanitizedBase}src/assets/icons/sprite.svg`;
-};
+const getSpritePath = () => spriteUrl;
 
 const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");

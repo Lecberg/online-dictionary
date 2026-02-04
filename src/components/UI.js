@@ -1,8 +1,6 @@
-const getSpritePath = () => {
-  const base = window.APP_BASE_PATH || "./";
-  const sanitizedBase = base.endsWith("/") ? base : `${base}/`;
-  return `${sanitizedBase}src/assets/icons/sprite.svg`;
-};
+import spriteUrl from "../assets/icons/sprite.svg";
+
+const getSpritePath = () => spriteUrl;
 
 const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");
