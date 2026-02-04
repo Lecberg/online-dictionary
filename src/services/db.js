@@ -77,8 +77,8 @@ export const saveToHistory = async (uid, word) => {
   if (!uid) {
     // Guest user: save to localStorage
     let history = getLocalHistory();
-    history = history.filter((item) => item.word !== wordLower);
-    history.unshift({ word: wordLower, timestamp: Date.now() });
+    history = history.filter((item) => item.word !== word);
+    history.unshift({ word: word, timestamp: Date.now() });
     localStorage.setItem(
       LOCAL_HISTORY_KEY,
       JSON.stringify(history.slice(0, MAX_HISTORY)),

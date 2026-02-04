@@ -17,6 +17,9 @@
   --bg-gradient: linear-gradient(135deg, #f8fafc, #e2e8f0, #f8fafc);
   --text-shadow: none;
   --on-primary: #ffffff;
+  --glass-blur: blur(12px);
+  --radius: 16px;
+  --error: #ef4444;
 }
 
 * {
@@ -122,22 +125,26 @@ header .icon {
 .translate-btn .icon {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
   stroke-width: 2.2;
+  stroke: currentColor;
 }
 
 /* Ensure SVG use elements inherit properly */
 svg.icon use {
   color: inherit;
+  stroke: currentcolor;
 }
 
 /* Star icon specific fix */
 #toggleFavBtn .icon {
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  stroke: currentcolor;
 }
 
 /* Close button icon enhancement */
 .modal-close-btn .icon {
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.5));
   stroke-width: 2.5;
+  stroke: currentcolor;
 }
 
 .app-container {
@@ -352,26 +359,6 @@ header {
   border-radius: 50px;
   border: none;
   background: transparent;
-  outline: none;
-  transition: all 0.3s ease;
-  color: var(--text-main);
-}
-
-.search-box {
-  position: relative;
-  width: 100%;
-}
-
-.search-input {
-  width: 100%;
-  padding: 1.2rem 11.5rem 1.2rem 4rem;
-  font-size: 1.1rem;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  border-radius: 50px;
-  border: var(--glass-border);
-  background: var(--surface);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
   outline: none;
   transition: all 0.3s ease;
   box-shadow: var(--shadow);

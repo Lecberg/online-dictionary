@@ -1,8 +1,8 @@
 import spriteUrl from "../assets/icons/sprite.svg";
 
-const getSpritePath = () => spriteUrl;
+export const getSpritePath = () => spriteUrl;
 
-const iconSvg = (symbolId, extraClasses = "") => {
+export const iconSvg = (symbolId, extraClasses = "") => {
   const classes = ["icon", extraClasses].filter(Boolean).join(" ");
   const spritePath = getSpritePath();
   const fullPath = `${spritePath}#${symbolId}`;
@@ -15,6 +15,7 @@ const iconSvg = (symbolId, extraClasses = "") => {
 
 export const renderWordResult = (data) => {
   const wordData = data[0];
+  const word = wordData.word.toLowerCase();
   return wordData.meanings
     .map(
       (meaning) => `
@@ -26,12 +27,12 @@ export const renderWordResult = (data) => {
                  <div class="definition-item">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <p><strong>${i + 1}.</strong> ${def.definition}</p>
-                        <button type="button" class="translate-btn" data-text="${def.definition.replace(/"/g, "&quot;")}" data-icon="icon-wand" title="Translate with AI" aria-label="Translate definition">
+                        <button type="button" class="translate-btn" data-word="${word}" data-index="${i}" data-text="${def.definition.replace(/"/g, "&quot;")}" data-icon="icon-wand" title="Translate with AI" aria-label="Translate definition">
                             ${iconSvg("icon-wand", "icon--sm")}
                         </button>
                     </div>
                     ${def.example ? `<span class="example-text">"${def.example}"</span>` : ""}
-                    <div class="translation-result hidden" id="trans-${i}"></div>
+                    <div class="translation-result hidden" id="trans-${word}-${i}"></div>
                 </div>
 
             `,
@@ -119,10 +120,9 @@ const parseMarkdown = (text) => {
     .replace(/\n/g, "<br>");
 
   // Wrap consecutive li elements in ul/ol
-  html = html.replace(/(<li>.*?<\/li>)+/g, (match) => {
-    const isOrdered = /^\d+/.test(
-      text.substring(text.indexOf(match) - 10, text.indexOf(match)),
-    );
+  html = html.replace(/(<li>.*?<\/li>)+/g, (match, offset) => {
+    const precedingText = text.substring(Math.max(0, offset - 50), offset);
+    const isOrdered = /^\d/.test(precedingText);
     const tag = isOrdered ? "ol" : "ul";
     return `<${tag}>${match}</${tag}>`;
   });

@@ -24,21 +24,9 @@ import {
   renderHistoryItem,
   renderWOD,
   showToast,
+  iconSvg,
+  getSpritePath,
 } from "./components/UI.js";
-import spriteUrl from "./assets/icons/sprite.svg";
-
-const getSpritePath = () => spriteUrl;
-
-const iconSvg = (symbolId, extraClasses = "") => {
-  const classes = ["icon", extraClasses].filter(Boolean).join(" ");
-  const spritePath = getSpritePath();
-  const fullPath = `${spritePath}#${symbolId}`;
-  return `
-    <svg class="${classes}" aria-hidden="true">
-      <use href="${fullPath}" xlink:href="${fullPath}"></use>
-    </svg>
-  `.trim();
-};
 
 // State
 let currentUser = null;
@@ -223,7 +211,6 @@ function renderConfigTags() {
       renderConfigTags();
       updateActiveSummary();
       setStatusMessage(`Switched to ${aiConfigs[activeConfigIndex].name}`);
-      showToast(`Switched to ${aiConfigs[activeConfigIndex].name}`, "success");
     };
   });
 
@@ -384,13 +371,11 @@ function updateAuthUI() {
 function setupDataListeners(uid) {
   const historyUnsub = listenToHistory(uid, (history) => {
     elements.historyList.innerHTML = history.length
-      ? history.map(renderHistoryItem).join("")
+      ? history.map((item) => renderHistoryItem(item)).join("")
       : '<p class="text-muted">No recent searches.</p>';
 
     document.querySelectorAll(".history-tag").forEach((tag) => {
-      if (!tag.hasAttribute("data-index")) {
-        tag.onclick = () => performSearch(tag.dataset.word);
-      }
+      tag.onclick = () => performSearch(tag.dataset.word);
     });
   });
   dataUnsubscribers.push(historyUnsub);
@@ -399,7 +384,7 @@ function setupDataListeners(uid) {
     const favUnsub = listenToFavorites(uid, (favorites) => {
       favoriteWords = favorites.map((f) => f.word.toLowerCase());
       elements.favoritesList.innerHTML = favorites.length
-        ? favorites.map(renderHistoryItem).join("")
+        ? favorites.map((item) => renderHistoryItem(item)).join("")
         : '<p class="text-muted">No favorites yet.</p>';
 
       updateFavoriteButton();
@@ -509,10 +494,12 @@ function displayResults(data) {
   elements.resMeanings.innerHTML = renderWordResult(data);
   elements.resultsSection.classList.remove("hidden");
 
-  document.querySelectorAll(".translate-btn").forEach((btn, i) => {
+  document.querySelectorAll(".translate-btn").forEach((btn) => {
     const defaultIconId = btn.dataset.icon || "icon-wand";
     btn.onclick = async () => {
-      const resultDiv = document.getElementById(`trans-${i}`);
+      const word = btn.dataset.word;
+      const index = btn.dataset.index;
+      const resultDiv = document.getElementById(`trans-${word}-${index}`);
       const originalText = btn.dataset.text;
 
       if (activeConfigIndex === -1) {
@@ -649,11 +636,16 @@ elements.toggleFavBtn.onclick = async () => {
   const isFav = favoriteWords.includes(currentWordData.word.toLowerCase());
   if (isFav) {
     await removeFromFavorites(currentUser.uid, currentWordData.word);
+    favoriteWords = favoriteWords.filter(
+      (w) => w !== currentWordData.word.toLowerCase(),
+    );
     showToast("Removed from favorites", "info");
   } else {
     await addToFavorites(currentUser.uid, currentWordData);
+    favoriteWords.push(currentWordData.word.toLowerCase());
     showToast("Added to favorites", "success");
   }
+  updateFavoriteButton();
 };
 
 window.addEventListener("click", (e) => {
@@ -696,7 +688,10 @@ async function initWOD() {
   try {
     const data = await fetchWordData(word);
     elements.wodContent.innerHTML = renderWOD(data);
-    document.getElementById("viewWodBtn").onclick = () => performSearch(word);
+    const viewWodBtn = document.getElementById("viewWodBtn");
+    if (viewWodBtn) {
+      viewWodBtn.onclick = () => performSearch(word);
+    }
   } catch (err) {
     elements.wodContent.innerHTML = "<p>Could not load Word of the Day.</p>";
   }
