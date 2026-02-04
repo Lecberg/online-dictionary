@@ -330,6 +330,11 @@ header {
   justify-content: center;
 }
 
+.btn-icon-only {
+  padding: 0.6rem;
+  min-width: 2.8rem;
+}
+
 .search-area {
   margin-bottom: 3rem;
 }
