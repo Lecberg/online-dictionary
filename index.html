@@ -28,8 +28,8 @@
         }
       }
     </script>
-    <script type="module" crossorigin src="./assets/index-Csnpv_9e.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DtR5ZOUi.css">
+    <script type="module" crossorigin src="./assets/index-BO6tH-18.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CEyGLTvo.css">
   </head>
   <body>
     <!-- Background particles -->
@@ -421,13 +421,56 @@
                         placeholder="https://api.openai.com/v1"
                       />
                     </div>
-                    <div class="form-group">
-                      <label>Model Identifier</label>
+<div class="form-group">
+                      <label for="modelsDropdown">Model</label>
+                      <div class="model-selection-wrapper">
+                        <select
+                          id="modelsDropdown"
+                          class="form-input model-dropdown"
+                          aria-label="Select available models"
+                        >
+                          <option value="" disabled selected>
+                            Click "Refresh" to fetch models...
+                          </option>
+                        </select>
+                        <button
+                          type="button"
+                          id="refreshModelsBtn"
+                          class="btn btn-outline btn-sm"
+                          aria-label="Fetch available models"
+                        >
+                          ⤾
+                        </button>
+                      </div>
+                      <div
+                        id="modelLoading"
+                        class="model-loading hidden"
+                      >
+                        ⏳ Fetching models...
+                      </div>
+                      <div
+                        id="modelInfo"
+                        class="small-text text-muted model-info"
+                      ></div>
                       <input
                         type="text"
                         id="aiModel"
-                        class="form-input"
-                        placeholder="gpt-4o, deepseek-chat"
+                        class="form-input hidden"
+                        placeholder="or enter model manually"
+                      />
+                    </div>
+                      <div id="modelLoading" class="model-loading hidden">
+                        Fetching models...
+                      </div>
+                      <div
+                        id="modelInfo"
+                        class="small-text text-muted model-info"
+                      ></div>
+                      <input
+                        type="text"
+                        id="aiModel"
+                        class="form-input hidden"
+                        placeholder="or enter model manually"
                       />
                     </div>
                     <div class="form-group">
