@@ -4,6 +4,9 @@ import {
   shouldFallback,
   getFallbackModel,
   MODEL_CONFIG,
+  normalizeProtocol,
+  validateConfigModel,
+  getProtocolDetails,
 } from "./ai-models.js";
 
 const deobfuscate = (text) => {
@@ -49,16 +52,31 @@ const fetchAI = async (messages, config) => {
     if (!response.ok) {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("text/html")) {
-        throw new Error(
-          `Server returned HTML (likely 404/500). Check your Host URL: ${cleanUrl}`,
-        );
+        const errorMsg = `Server returned HTML (likely 404/500). Check your Host URL: ${cleanUrl}`;
+        console.error("API Error details:", {
+          protocol: config.protocol,
+          model: config.model,
+          host: cleanUrl,
+          status: response.status,
+          message: errorMsg,
+        });
+        throw new Error(errorMsg);
       }
       const error = await response.json();
-      throw new Error(
+      const errorMsg =
         error.error?.message ||
-          error.message ||
-          `API Error (${response.status})`,
-      );
+        error.message ||
+        `API Error (${response.status}`;
+
+      console.error("API Error details:", {
+        protocol: config.protocol,
+        model: config.model,
+        host: cleanUrl,
+        status: response.status,
+        message: errorMsg,
+      });
+
+      throw new Error(`API Error (${response.status}): ${errorMsg}`);
     }
 
     const data = await response.json();
@@ -127,14 +145,43 @@ export const translateText = async (text, config) => {
 
 const performTranslation = async (text, config) => {
   const originalModel = config.model;
+  const originalProtocol = config.protocol;
 
-  if (MODEL_CONFIG.AUTO_SELECT) {
+  console.debug("performTranslation called:", {
+    protocol: config.protocol,
+    userModel: config.model,
+    wordCount: text.split(/\s+/).length,
+    autoSelect: MODEL_CONFIG.AUTO_SELECT,
+  });
+
+  if (!config || !config.protocol) {
+    console.error("Invalid config: missing protocol", config);
+    throw new Error("Invalid configuration: protocol is required");
+  }
+
+  const validation = validateConfigModel(config);
+  if (!validation.isValid) {
+    throw new Error(validation.error);
+  }
+
+  if (MODEL_CONFIG.AUTO_SELECT && validation.shouldAutoSelect) {
+    const normalizedProtocol = normalizeProtocol(config.protocol);
+    config.protocol = normalizedProtocol;
+
     const optimalModel = selectOptimalModel(
       text,
-      originalModel,
+      originalModel || undefined,
       config.protocol,
     );
-    config.model = optimalModel;
+
+    if (!originalModel || !originalModel.trim()) {
+      config.model = optimalModel;
+      console.debug(
+        `Auto-selected model: ${optimalModel} (protocol: ${config.protocol})`,
+      );
+    } else {
+      console.debug(`Using user-specified model: ${originalModel}`);
+    }
   }
 
   const messages = [
@@ -208,14 +255,43 @@ export const generateWordDefinition = async (word, config) => {
 
 const performDefinitionGeneration = async (word, config) => {
   const originalModel = config.model;
+  const originalProtocol = config.protocol;
 
-  if (MODEL_CONFIG.AUTO_SELECT) {
+  console.debug("performDefinitionGeneration called:", {
+    protocol: config.protocol,
+    userModel: config.model,
+    wordCount: word.split(/\s+/).length,
+    autoSelect: MODEL_CONFIG.AUTO_SELECT,
+  });
+
+  if (!config || !config.protocol) {
+    console.error("Invalid config: missing protocol", config);
+    throw new Error("Invalid configuration: protocol is required");
+  }
+
+  const validation = validateConfigModel(config);
+  if (!validation.isValid) {
+    throw new Error(validation.error);
+  }
+
+  if (MODEL_CONFIG.AUTO_SELECT && validation.shouldAutoSelect) {
+    const normalizedProtocol = normalizeProtocol(config.protocol);
+    config.protocol = normalizedProtocol;
+
     const optimalModel = selectOptimalModel(
       word,
-      originalModel,
+      originalModel || undefined,
       config.protocol,
     );
-    config.model = optimalModel;
+
+    if (!originalModel || !originalModel.trim()) {
+      config.model = optimalModel;
+      console.debug(
+        `Auto-selected model: ${optimalModel} (protocol: ${config.protocol})`,
+      );
+    } else {
+      console.debug(`Using user-specified model: ${originalModel}`);
+    }
   }
 
   const messages = [

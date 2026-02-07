@@ -19,6 +19,11 @@ import {
 import { fetchWordData } from "./services/dictionary.js";
 import { translateText, generateWordDefinition } from "./services/ai.js";
 import {
+  fetchAvailableModels,
+  getModelsCache,
+  clearModelsCache,
+} from "./services/fetchmodels.js";
+import {
   renderWordResult,
   renderAIResult,
   renderHistoryItem,
@@ -76,6 +81,10 @@ const elements = {
   aiHost: document.getElementById("aiHost"),
   aiModel: document.getElementById("aiModel"),
   aiLanguage: document.getElementById("aiLanguage"),
+  refreshModelsBtn: document.getElementById("refreshModelsBtn"),
+  modelsDropdown: document.getElementById("modelsDropdown"),
+  modelLoading: document.getElementById("modelLoading"),
+  modelInfo: document.getElementById("modelInfo"),
   deleteConfigBtn: document.getElementById("deleteConfigBtn"),
   aiEditorModeLabel: document.getElementById("aiEditorModeLabel"),
   aiEditorTitle: document.getElementById("aiEditorTitle"),
@@ -246,6 +255,29 @@ function openEditor(index = -1) {
     elements.aiEditorModeLabel.textContent = "Editing configuration";
     elements.aiEditorTitle.textContent = cfg.name;
     elements.aiEditorSubtitle.textContent = `${cfg.protocol.toUpperCase()} • ${cfg.targetLanguage}`;
+
+    if (cfg.host && cfg.apiKey) {
+      const cached = getModelsCache(cfg.host);
+      if (cached && cached.length > 0) {
+        populateModelDropdown(cached);
+        elements.modelInfo.textContent = `✓ Loaded ${cached.length} cached models`;
+      } else {
+        fetchAvailableModels(cfg)
+          .then(({ models, source }) => {
+            if (models.length > 0) {
+              populateModelDropdown(models);
+              elements.modelInfo.textContent =
+                source === "cache"
+                  ? `✓ Loaded ${models.length} cached models`
+                  : `✓ Fetched ${models.length} models`;
+            }
+          })
+          .catch((err) => {
+            console.error("Auto-fetch models failed:", err);
+            elements.modelInfo.textContent = "⚠ Could not load models";
+          });
+      }
+    }
   } else {
     elements.aiSettingsForm.reset();
     elements.deleteConfigBtn.classList.add("hidden");
@@ -288,6 +320,88 @@ elements.testAiConfigBtn.onclick = async () => {
   }
 };
 
+function populateModelDropdown(models) {
+  const currentValue = elements.aiModel.value;
+
+  elements.modelsDropdown.innerHTML = `
+    <option value="" disabled selected>Select a model...</option>
+  `;
+
+  if (models.length === 0) {
+    elements.modelsDropdown.innerHTML += `
+      <option value="" disabled style="color: var(--text-muted)">
+        No models available - enter manually
+      </option>
+    `;
+    return;
+  }
+
+  models.forEach((model) => {
+    const option = document.createElement("option");
+    option.value = model.id;
+    option.textContent = model.name || model.id;
+    if (model.id === currentValue) {
+      option.selected = true;
+    }
+    elements.modelsDropdown.appendChild(option);
+  });
+}
+
+elements.refreshModelsBtn.onclick = async () => {
+  const currentConfig = aiConfigs[activeConfigIndex] || {
+    protocol: elements.aiProtocol.value,
+    host: elements.aiHost.value,
+    apiKey: elements.aiApiKey.value,
+  };
+
+  if (!currentConfig.apiKey) {
+    showToast("API Key is required to fetch models", "error");
+    setStatusMessage("API Key is required to fetch models", "error");
+    return;
+  }
+
+  if (!currentConfig.host) {
+    showToast("Host URL is required to fetch models", "error");
+    setStatusMessage("Host URL is required to fetch models", "error");
+    return;
+  }
+
+  try {
+    elements.refreshModelsBtn.disabled = true;
+    elements.modelLoading.classList.remove("hidden");
+    elements.modelsDropdown.disabled = true;
+
+    const { models, source } = await fetchAvailableModels(currentConfig);
+
+    populateModelDropdown(models);
+
+    elements.modelInfo.textContent =
+      source === "cache"
+        ? `✓ Loaded ${models.length} cached models`
+        : `✓ Fetched ${models.length} models`;
+
+    if (models.length > 0 && !elements.aiModel.value) {
+      elements.aiModel.value = elements.modelsDropdown.value || models[0].id;
+    }
+
+    showToast(`Loaded ${models.length} available models`, "success");
+    setStatusMessage(`Loaded ${models.length} available models`, "success");
+  } catch (error) {
+    console.error("Fetch models error:", error);
+    showToast(error.message, "error");
+    setStatusMessage(error.message, "error");
+    elements.modelInfo.textContent = "⚠ Error fetching models";
+  } finally {
+    elements.refreshModelsBtn.disabled = false;
+    elements.modelLoading.classList.add("hidden");
+    elements.modelsDropdown.disabled = false;
+  }
+};
+
+elements.modelsDropdown.onchange = () => {
+  elements.aiModel.value = elements.modelsDropdown.value;
+};
+
 elements.deleteConfigBtn.onclick = async () => {
   if (currentEditingIndex < 0) return;
   aiConfigs.splice(currentEditingIndex, 1);
@@ -323,6 +437,12 @@ elements.aiSettingsForm.onsubmit = async (e) => {
 
   if (!config.apiKey) {
     showToast("API Key is required", "error");
+    return;
+  }
+
+  if (!config.model || !config.model.trim()) {
+    showToast("Model is required", "error");
+    setStatusMessage("Model is required", "error");
     return;
   }
 
