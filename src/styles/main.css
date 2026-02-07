@@ -510,9 +510,38 @@ header {
 .definition-item {
   margin: 1rem 0;
   padding: 1rem;
-  background: var(--surface-hover);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+/* Cache Indicator */
+.cache-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.75rem;
+  padding: 0.25rem 0.6rem;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #16a34a;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.cache-indicator .icon {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.cache-indicator.fallback {
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.3);
+  color: var(--secondary);
 }
 
 .example-text {

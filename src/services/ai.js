@@ -1,3 +1,11 @@
+import { getCachedTranslation, setCachedTranslation } from "./cache.js";
+import {
+  selectOptimalModel,
+  shouldFallback,
+  getFallbackModel,
+  MODEL_CONFIG,
+} from "./ai-models.js";
+
 const deobfuscate = (text) => {
   if (!text) return "";
   try {
@@ -10,6 +18,12 @@ const deobfuscate = (text) => {
 export const AI_PROTOCOLS = {
   OPENAI: "openai",
   GEMINI: "gemini",
+};
+
+const pendingRequests = new Map();
+
+const generateRequestKey = (text, config) => {
+  return `${text}||${config.targetLanguage || "Spanish"}||${config.model || "gpt-3.5-turbo"}||${config.protocol || "openai"}`;
 };
 
 const fetchAI = async (messages, config) => {
@@ -85,6 +99,44 @@ const fetchAI = async (messages, config) => {
 };
 
 export const translateText = async (text, config) => {
+  if (!text || !config) {
+    throw new Error("Text and config are required for translation");
+  }
+
+  const requestKey = generateRequestKey(text, config);
+
+  const cachedResult = await getCachedTranslation(text, config);
+  if (cachedResult.cached) {
+    return { translation: cachedResult.translation, cached: true };
+  }
+
+  if (pendingRequests.has(requestKey)) {
+    return pendingRequests.get(requestKey);
+  }
+
+  const requestPromise = performTranslation(text, config);
+  pendingRequests.set(requestKey, requestPromise);
+
+  try {
+    const result = await requestPromise;
+    return result;
+  } finally {
+    pendingRequests.delete(requestKey);
+  }
+};
+
+const performTranslation = async (text, config) => {
+  const originalModel = config.model;
+
+  if (MODEL_CONFIG.AUTO_SELECT) {
+    const optimalModel = selectOptimalModel(
+      text,
+      originalModel,
+      config.protocol,
+    );
+    config.model = optimalModel;
+  }
+
   const messages = [
     {
       role: "system",
@@ -92,10 +144,80 @@ export const translateText = async (text, config) => {
     },
     { role: "user", content: text },
   ];
-  return fetchAI(messages, config);
+
+  try {
+    const translation = await fetchAI(messages, config);
+
+    await setCachedTranslation(text, config, translation);
+
+    return { translation, cached: false, modelUsed: config.model };
+  } catch (error) {
+    if (MODEL_CONFIG.ENABLE_FALLBACK && shouldFallback(error)) {
+      const fallbackModel = getFallbackModel(config.model, config.protocol);
+
+      if (fallbackModel !== config.model) {
+        config.model = fallbackModel;
+        const retryMessages = [
+          {
+            role: "system",
+            content: `You are a translator. Translate the following text to ${config.targetLanguage || "Spanish"}. Provide only the translation, no explanations.`,
+          },
+          { role: "user", content: text },
+        ];
+
+        const translation = await fetchAI(retryMessages, config);
+
+        await setCachedTranslation(text, config, translation);
+
+        return {
+          translation,
+          cached: false,
+          modelUsed: config.model,
+          fallback: true,
+        };
+      }
+    }
+
+    throw error;
+  } finally {
+    config.model = originalModel;
+  }
 };
 
 export const generateWordDefinition = async (word, config) => {
+  if (!word || !config) {
+    throw new Error("Word and config are required for definition generation");
+  }
+
+  const requestKey = `definition:${word}||${config.model || "gpt-3.5-turbo"}||${config.protocol || "openai"}`;
+
+  if (pendingRequests.has(requestKey)) {
+    return pendingRequests.get(requestKey);
+  }
+
+  const requestPromise = performDefinitionGeneration(word, config);
+  pendingRequests.set(requestKey, requestPromise);
+
+  try {
+    const result = await requestPromise;
+    return result;
+  } finally {
+    pendingRequests.delete(requestKey);
+  }
+};
+
+const performDefinitionGeneration = async (word, config) => {
+  const originalModel = config.model;
+
+  if (MODEL_CONFIG.AUTO_SELECT) {
+    const optimalModel = selectOptimalModel(
+      word,
+      originalModel,
+      config.protocol,
+    );
+    config.model = optimalModel;
+  }
+
   const messages = [
     {
       role: "system",
@@ -106,5 +228,34 @@ export const generateWordDefinition = async (word, config) => {
       content: `Please provide meanings, part of speech, and examples for the word: "${word}". Format the response using Markdown for clarity.`,
     },
   ];
-  return fetchAI(messages, config);
+
+  try {
+    const definition = await fetchAI(messages, config);
+    return { definition, modelUsed: config.model };
+  } catch (error) {
+    if (MODEL_CONFIG.ENABLE_FALLBACK && shouldFallback(error)) {
+      const fallbackModel = getFallbackModel(config.model, config.protocol);
+
+      if (fallbackModel !== config.model) {
+        config.model = fallbackModel;
+        const retryMessages = [
+          {
+            role: "system",
+            content: `You are an expert lexicographer. Provide a detailed dictionary entry for the requested word in ${config.targetLanguage || "English"}.`,
+          },
+          {
+            role: "user",
+            content: `Please provide meanings, part of speech, and examples for the word: "${word}". Format the response using Markdown for clarity.`,
+          },
+        ];
+
+        const definition = await fetchAI(retryMessages, config);
+        return { definition, modelUsed: config.model, fallback: true };
+      }
+    }
+
+    throw error;
+  } finally {
+    config.model = originalModel;
+  }
 };

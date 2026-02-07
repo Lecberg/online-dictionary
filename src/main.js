@@ -521,11 +521,30 @@ function displayResults(data) {
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
-        const translation = await translateText(
+        const result = await translateText(
           originalText,
           aiConfigs[activeConfigIndex],
         );
-        resultDiv.textContent = translation;
+
+        const { translation, cached, modelUsed, fallback } = result;
+
+        if (cached) {
+          resultDiv.innerHTML = `
+            ${translation}
+            <span class="cache-indicator" title="Loaded from cache (instant)">
+              ${iconSvg("icon-check-circle")} Cached
+            </span>
+          `;
+        } else {
+          resultDiv.textContent = translation;
+          if (fallback) {
+            resultDiv.innerHTML += `
+              <span class="cache-indicator fallback" title="Fallback model used">
+                ${iconSvg("icon-info-circle")} Used fast model
+              </span>
+            `;
+          }
+        }
       } catch (err) {
         showToast(err.message, "error");
         resultDiv.classList.add("hidden");
