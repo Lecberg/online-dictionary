@@ -11,5 +11,15 @@ export const fetchWordData = async (word) => {
   }
 
   const data = await response.json();
+
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    throw new Error("Invalid response from dictionary API.");
+  }
+
+  const wordData = data[0];
+  if (!wordData || !wordData.meanings || wordData.meanings.length === 0) {
+    throw new Error("Word found but has no definitions available.");
+  }
+
   return data;
 };

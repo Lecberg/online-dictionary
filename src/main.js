@@ -116,7 +116,7 @@ const elements = {
 
 // --- Initialization ---
 
-subscribeToAuthChanges((user) => {
+subscribeToAuthChanges(async (user) => {
   currentUser = user;
   updateAuthUI();
 
@@ -125,7 +125,17 @@ subscribeToAuthChanges((user) => {
 
   const uid = user ? user.uid : null;
   if (user) {
-    syncHistoryToCloud(uid).then(() => setupDataListeners(uid));
+    await syncHistoryToCloud(uid);
+    setupDataListeners(uid);
+
+    if (pendingWordData) {
+      currentWordData = pendingWordData;
+      await addToFavorites(uid, currentWordData);
+      favoriteWords.push(currentWordData.word.toLowerCase());
+      updateFavoriteButton();
+      pendingWordData = null;
+      showToast("Added pending word to favorites", "success");
+    }
   } else {
     setupDataListeners(null);
   }
@@ -304,13 +314,22 @@ elements.testAiConfigBtn.onclick = async () => {
     return;
   }
 
+  const config = aiConfigs[activeConfigIndex];
+
+  if (!config.apiKey || !config.apiKey.trim()) {
+    setStatusMessage("API Key is required", "error");
+    return;
+  }
+
+  if (!config.model || !config.model.trim()) {
+    setStatusMessage("Model is required", "error");
+    return;
+  }
+
   try {
     elements.testAiConfigBtn.disabled = true;
     elements.testAiConfigBtn.textContent = "Testing…";
-    await translateText(
-      "This is a test sentence.",
-      aiConfigs[activeConfigIndex],
-    );
+    await translateText("This is a test sentence.", config);
     setStatusMessage("Connection looks good!", "success");
   } catch (err) {
     setStatusMessage(err.message, "error");
@@ -563,6 +582,30 @@ async function handleAIGenerate() {
     return;
   }
 
+  const config = aiConfigs[activeConfigIndex];
+
+  if (!config.apiKey || !config.apiKey.trim()) {
+    showToast(
+      "API Key is required! Please configure it in AI Settings.",
+      "error",
+    );
+    renderConfigTags();
+    elements.aiSettingsModal.classList.add("active");
+    document.body.classList.add("modal-open");
+    return;
+  }
+
+  if (!config.protocol || !config.protocol.trim()) {
+    showToast(
+      "Protocol is required! Please configure it in AI Settings.",
+      "error",
+    );
+    renderConfigTags();
+    elements.aiSettingsModal.classList.add("active");
+    document.body.classList.add("modal-open");
+    return;
+  }
+
   const aiBtn = elements.aiGenerateBtn;
   const originalHtml = aiBtn.innerHTML;
 
@@ -574,7 +617,6 @@ async function handleAIGenerate() {
     elements.loader.classList.remove("hidden");
     elements.errorMsg.classList.add("hidden");
 
-    const config = aiConfigs[activeConfigIndex];
     const definition = await generateWordDefinition(word, config);
 
     // If showing results for a different word or section is hidden, reset for new word
@@ -633,6 +675,24 @@ function displayResults(data) {
       }
 
       try {
+        const config = aiConfigs[activeConfigIndex];
+
+        if (!config.apiKey || !config.apiKey.trim()) {
+          showToast(
+            "API Key is required! Please configure it in AI Settings.",
+            "error",
+          );
+          return;
+        }
+
+        if (!config.model || !config.model.trim()) {
+          showToast(
+            "Model is required! Please configure it in AI Settings.",
+            "error",
+          );
+          return;
+        }
+
         btn.disabled = true;
         btn.classList.add("is-loading");
         btn
@@ -641,10 +701,7 @@ function displayResults(data) {
         resultDiv.textContent = "Translating...";
         resultDiv.classList.remove("hidden");
 
-        const result = await translateText(
-          originalText,
-          aiConfigs[activeConfigIndex],
-        );
+        const result = await translateText(originalText, config);
 
         const { translation, cached, modelUsed, fallback } = result;
 
@@ -767,8 +824,11 @@ elements.registerForm.onsubmit = async (e) => {
   }
 };
 
+let pendingWordData = null;
+
 elements.toggleFavBtn.onclick = async () => {
   if (!currentUser) {
+    pendingWordData = currentWordData;
     elements.loginModal.classList.add("active");
     return;
   }

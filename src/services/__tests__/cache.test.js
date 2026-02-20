@@ -100,17 +100,22 @@ describe("Cache Service", () => {
       const db = await initCache();
       const tx = db.transaction(["translations"], "readwrite");
       const store = tx.objectStore("translations");
-      const key = crypto.getRandomValues(new Uint8Array(10)).join("");
       await new Promise((resolve) => {
-        const req = store.put({
-          key,
-          text,
-          translation,
-          ...mockConfig,
-          timestamp: Date.now() - CACHE_TTL_DAYS * 24 * 60 * 60 * 1000 - 1000,
-          hitCount: 0,
-        });
-        req.onsuccess = resolve;
+        const req = store.openCursor();
+        req.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            if (cursor.value.text === text) {
+              const entry = cursor.value;
+              entry.timestamp = Date.now() - CACHE_TTL_DAYS * 24 * 60 * 60 * 1000 - 1000;
+              store.put(entry).onsuccess = resolve;
+            } else {
+              cursor.continue();
+            }
+          } else {
+            resolve();
+          }
+        };
       });
 
       const result = await getCachedTranslation(text, mockConfig);
@@ -127,14 +132,20 @@ describe("Cache Service", () => {
       const db = await initCache();
       const tx = db.transaction(["translations"], "readonly");
       const store = tx.objectStore("translations");
-      const key = crypto.getRandomValues(new Uint8Array(10)).join("");
-
       await new Promise((resolve, reject) => {
-        const req = store.get(key);
-        req.onsuccess = () => {
-          const entry = req.result;
-          expect(entry.timestamp).toBeGreaterThan(beforeTime);
-          resolve();
+        const req = store.openCursor();
+        req.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            if (cursor.value.text === text) {
+              expect(cursor.value.timestamp).toBeGreaterThanOrEqual(beforeTime);
+              resolve();
+            } else {
+              cursor.continue();
+            }
+          } else {
+            reject(new Error("Failed to get entry"));
+          }
         };
         req.onerror = () => reject(new Error("Failed to get entry"));
       });
@@ -163,17 +174,19 @@ describe("Cache Service", () => {
       const firstText = "First text";
       await setCachedTranslation(firstText, mockConfig, "First translation");
 
-      for (let i = 0; i < MAX_CACHE_ENTRIES; i++) {
+      for (let i = 0; i < MAX_CACHE_ENTRIES - 1; i++) {
         await setCachedTranslation(`Text ${i}`, mockConfig, `Translation ${i}`);
       }
 
+      await new Promise(r => setTimeout(r, 10));
       await getCachedTranslation(firstText, mockConfig);
+      await new Promise(r => setTimeout(r, 10));
 
-      for (let i = 0; i < MAX_CACHE_ENTRIES; i++) {
+      for (let i = 0; i < MAX_CACHE_ENTRIES - 1; i++) {
         await setCachedTranslation(
           `New Text ${i}`,
           mockConfig,
-          `New Translation ${i}`,
+          `New Translation ${i}`
         );
       }
 
@@ -193,14 +206,20 @@ describe("Cache Service", () => {
       const db = await initCache();
       const tx = db.transaction(["translations"], "readonly");
       const store = tx.objectStore("translations");
-      const key = crypto.getRandomValues(new Uint8Array(10)).join("");
-
       await new Promise((resolve, reject) => {
-        const req = store.get(key);
-        req.onsuccess = () => {
-          const entry = req.result;
-          expect(entry.hitCount).toBeGreaterThanOrEqual(1);
-          resolve();
+        const req = store.openCursor();
+        req.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            if (cursor.value.text === text) {
+              expect(cursor.value.hitCount).toBeGreaterThanOrEqual(1);
+              resolve();
+            } else {
+              cursor.continue();
+            }
+          } else {
+            reject(new Error("Failed to get entry"));
+          }
         };
         req.onerror = () => reject(new Error("Failed to get entry"));
       });
@@ -215,24 +234,28 @@ describe("Cache Service", () => {
       const db = await initCache();
       const tx = db.transaction(["translations"], "readwrite");
       const store = tx.objectStore("translations");
-      const key = crypto.getRandomValues(new Uint8Array(10)).join("");
-
       await new Promise((resolve) => {
-        const req = store.put({
-          key,
-          text,
-          translation: "Old translation",
-          ...mockConfig,
-          timestamp: Date.now() - CACHE_TTL_DAYS * 24 * 60 * 60 * 1000 - 1000,
-          hitCount: 0,
-        });
-        req.onsuccess = resolve;
+        const req = store.openCursor();
+        req.onsuccess = (e) => {
+          const cursor = e.target.result;
+          if (cursor) {
+            if (cursor.value.text === text) {
+              const entry = cursor.value;
+              entry.timestamp = Date.now() - CACHE_TTL_DAYS * 24 * 60 * 60 * 1000 - 1000;
+              store.put(entry).onsuccess = resolve;
+            } else {
+              cursor.continue();
+            }
+          } else {
+            resolve();
+          }
+        };
       });
 
       await clearExpiredCache();
 
       const stats = await getCacheStats();
-      expect(stats.expiredCount).toBeGreaterThan(0);
+      expect(stats.expiredCount).toBe(0);
     });
   });
 

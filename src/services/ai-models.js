@@ -131,6 +131,7 @@ export const getFallbackModel = (model, protocol) => {
 };
 
 export const estimateTokenCount = (text) => {
+  if (!text || typeof text !== "string" || !text.trim()) return 0;
   return Math.ceil(text.trim().split(/\s+/).length * 1.3);
 };
 

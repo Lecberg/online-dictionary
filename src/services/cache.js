@@ -56,31 +56,28 @@ const enforceCacheLimit = async (transaction) => {
   return new Promise((resolve) => {
     countRequest.onsuccess = async () => {
       const count = countRequest.result;
-      if (count <= MAX_CACHE_ENTRIES) {
+      if (count < MAX_CACHE_ENTRIES) {
         resolve();
         return;
       }
 
-      const index = store.index("hitCount");
-      const allKeysRequest = store.openKeyCursor(null, "prev");
+      const index = store.index("timestamp");
+      const allKeysRequest = index.openKeyCursor(null, "next");
 
+      const entriesToDelete = count - MAX_CACHE_ENTRIES + 1;
+      let deleted = 0;
+      
       allKeysRequest.onsuccess = (event) => {
         const cursor = event.target.result;
-        const entriesToDelete = count - MAX_CACHE_ENTRIES;
-
-        if (cursor && entriesToDelete > 0) {
-          const deleteRequest = store.delete(cursor.primaryKey);
-          deleteRequest.onsuccess = () => {
-            store.count().onsuccess = (countEvent) => {
-              if (countEvent.target.result > MAX_CACHE_ENTRIES) {
-                enforceCacheLimit(transaction);
-              } else {
-                resolve();
-              }
-            };
-          };
+        
+        if (cursor && deleted < entriesToDelete) {
+           const deleteRequest = store.delete(cursor.primaryKey);
+           deleteRequest.onsuccess = () => {
+               deleted++;
+               cursor.continue();
+           };
         } else {
-          resolve();
+           resolve();
         }
       };
     };
@@ -118,6 +115,7 @@ const getCachedTranslation = async (text, config) => {
         const updateStore = updateTx.objectStore(CACHE_STORE_NAME);
         result.hitCount = (result.hitCount || 0) + 1;
         result.lastAccessed = Date.now();
+        result.timestamp = Date.now();
         updateStore.put(result);
 
         resolve({ cached: true, translation: result.translation });

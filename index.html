@@ -187,6 +187,18 @@
     <!-- Auth Modals -->
     <div id="loginModal" class="modal">
       <div class="modal-content">
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close login"
+          onclick="
+            document.getElementById('loginModal').classList.remove('active')
+          "
+        >
+          <svg class="icon" aria-hidden="true">
+            <use href="./src/assets/icons/sprite.svg#icon-close"></use>
+          </svg>
+        </button>
         <h2 class="section-title">Welcome Back</h2>
         <form id="loginForm">
           <div class="form-group">
@@ -232,6 +244,18 @@
 
     <div id="registerModal" class="modal">
       <div class="modal-content">
+        <button
+          type="button"
+          class="modal-close-btn"
+          aria-label="Close register"
+          onclick="
+            document.getElementById('registerModal').classList.remove('active')
+          "
+        >
+          <svg class="icon" aria-hidden="true">
+            <use href="./src/assets/icons/sprite.svg#icon-close"></use>
+          </svg>
+        </button>
         <h2 class="section-title">Create Account</h2>
         <form id="registerForm">
           <div class="form-group">
@@ -419,7 +443,7 @@
                         placeholder="https://api.openai.com/v1"
                       />
                     </div>
-<div class="form-group">
+                    <div class="form-group">
                       <label for="modelsDropdown">Model</label>
                       <div class="model-selection-wrapper">
                         <select
@@ -440,25 +464,8 @@
                           ⤾
                         </button>
                       </div>
-                      <div
-                        id="modelLoading"
-                        class="model-loading hidden"
-                      >
-                        ⏳ Fetching models...
-                      </div>
-                      <div
-                        id="modelInfo"
-                        class="small-text text-muted model-info"
-                      ></div>
-                      <input
-                        type="text"
-                        id="aiModel"
-                        class="form-input hidden"
-                        placeholder="or enter model manually"
-                      />
-                    </div>
                       <div id="modelLoading" class="model-loading hidden">
-                        Fetching models...
+                        ⏳ Fetching models...
                       </div>
                       <div
                         id="modelInfo"

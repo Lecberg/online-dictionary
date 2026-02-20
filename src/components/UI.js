@@ -76,6 +76,10 @@ export const renderHistoryItem = (
 
 export const renderWOD = (wordData) => {
   const word = wordData[0];
+  if (!word || !word.meanings || !word.meanings[0]?.definitions?.[0]) {
+    return `<p>Could not load Word of the Day.</p>`;
+  }
+
   const definition = word.meanings[0].definitions[0].definition;
 
   return `
