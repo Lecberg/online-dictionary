@@ -6,17 +6,27 @@ vi.mock("../cache.js", () => ({
   setCachedTranslation: vi.fn(),
 }));
 
-vi.mock("../ai-models.js", () => ({
-  selectOptimalModel: vi.fn(),
-  shouldFallback: vi.fn(),
-  getFallbackModel: vi.fn(),
-  MODEL_CONFIG: {
-    AUTO_SELECT: true,
-    FAST_THRESHOLD: 50,
-    BALANCED_THRESHOLD: 150,
-    ENABLE_FALLBACK: true,
-  },
-}));
+vi.mock("../ai-models.js", async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    selectOptimalModel: vi.fn((text, model) => model || "gpt-3.5-turbo"),
+    shouldFallback: vi.fn((error) => error.message && error.message.includes("502")),
+    getFallbackModel: vi.fn(() => "gpt-3.5-turbo"),
+    MODEL_CONFIG: {
+      AUTO_SELECT: true,
+      FAST_THRESHOLD: 50,
+      BALANCED_THRESHOLD: 150,
+      ENABLE_FALLBACK: true,
+      FALLBACK_TIER: "FAST",
+    },
+    validateConfigModel: vi.fn(() => ({
+      isValid: true,
+      shouldAutoSelect: true,
+    })),
+    normalizeProtocol: vi.fn((p) => p),
+  };
+});
 
 describe("AI Service - translateText", () => {
   const mockConfig = {
@@ -225,7 +235,7 @@ describe("AI Service - translateText", () => {
         }),
       );
 
-      const result = await translateText("Test", mockConfig);
+      const result = await translateText("Test", { ...mockConfig, model: "" });
 
       expect(result.modelUsed).toBe("gpt-3.5-turbo");
     });
@@ -322,7 +332,7 @@ describe("AI Service - translateText", () => {
         });
       });
 
-      const result = await translateText("Test", mockConfig);
+      const result = await translateText("Test", { ...mockConfig, model: "" });
 
       expect(result.translation).toBe("Fallback translation");
       expect(result.fallback).toBe(true);
@@ -552,7 +562,7 @@ describe("AI Service - generateWordDefinition", () => {
         }),
       );
 
-      const result = await generateWordDefinition("test", mockConfig);
+      const result = await generateWordDefinition("test", { ...mockConfig, model: "" });
 
       expect(result.modelUsed).toBe("gpt-4o-mini");
     });
@@ -608,7 +618,7 @@ describe("AI Service - generateWordDefinition", () => {
         });
       });
 
-      const result = await generateWordDefinition("test", mockConfig);
+      const result = await generateWordDefinition("test", { ...mockConfig, model: "" });
 
       expect(result.definition).toBe("Fallback definition");
       expect(result.fallback).toBe(true);

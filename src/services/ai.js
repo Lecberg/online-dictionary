@@ -23,7 +23,7 @@ export const AI_PROTOCOLS = {
   GEMINI: "gemini",
 };
 
-const pendingRequests = new Map();
+export const pendingRequests = new Map();
 
 const generateRequestKey = (text, config) => {
   return `${text}||${config.targetLanguage || "Spanish"}||${config.model || "gpt-3.5-turbo"}||${config.protocol || "openai"}`;
@@ -50,7 +50,7 @@ const fetchAI = async (messages, config) => {
     });
 
     if (!response.ok) {
-      const contentType = response.headers.get("content-type");
+      const contentType = response.headers?.get("content-type");
       if (contentType && contentType.includes("text/html")) {
         const errorMsg = `Server returned HTML (likely 404/500). Check your Host URL: ${cleanUrl}`;
         console.error("API Error details:", {
