@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap"
       rel="stylesheet"
     />
 
@@ -28,8 +28,8 @@
         }
       }
     </script>
-    <script type="module" crossorigin src="./assets/index-BkZ7OZye.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CEyGLTvo.css">
+    <script type="module" crossorigin src="./assets/index-CqrOy58z.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B7Ea9dSO.css">
   </head>
   <body>
     <!-- Background particles -->
@@ -61,34 +61,14 @@
           <div id="userView" class="user-info hidden">
             <img id="userAvatar" class="avatar" src="" alt="Profile" />
             <span id="userName"></span>
-            <button
-              id="showSettingsBtn"
-              class="btn btn-outline btn-icon-only"
-              aria-label="AI Settings"
-            >
-              <svg class="icon" aria-hidden="true">
-                <use href="./assets/sprite-D5Sq9OM_.svg#icon-gear"></use>
-              </svg>
-            </button>
             <button id="logoutBtn" class="btn btn-outline">Logout</button>
           </div>
         </nav>
       </header>
 
-      <main>
-        <!-- Word of the Day -->
-        <section id="wordOfDay" class="wod-card glass-card">
-          <div class="liquid-layer" id="wodLiquidLayer"></div>
-          <div class="card-content">
-            <h2>Word of the Day</h2>
-            <div id="wodContent">
-              <p>Loading inspiration...</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Search -->
-        <section class="search-area">
+      <main class="bento-grid">
+        <!-- Search Hero -->
+        <section class="bento-card bento-card--full search-hero">
           <div class="search-box">
             <div class="search-glass-container">
               <input
@@ -104,28 +84,30 @@
               </span>
               <div class="search-actions">
                 <button id="searchBtn" class="search-btn">Search</button>
-                <button
-                  id="aiGenerateBtn"
-                  class="search-btn ai-btn"
-                  title="Generate meaning with AI"
-                >
-                  <svg class="icon icon--sm" aria-hidden="true">
-                    <use href="./assets/sprite-D5Sq9OM_.svg#icon-wand"></use>
-                  </svg>
-                  AI
-                </button>
               </div>
             </div>
           </div>
         </section>
 
+        <!-- Word of the Day -->
+        <section id="wordOfDay" class="bento-card bento-card--wide">
+          <div class="card-content">
+            <h2>Word of the Day</h2>
+            <div id="wodContent">
+              <p>Loading inspiration...</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Status Indicators -->
-        <div id="loader" class="hidden">Searching...</div>
+        <div id="loader" class="hidden"></div>
         <div id="errorMsg" class="hidden"></div>
 
         <!-- Results -->
-        <section id="resultsSection" class="result-card glass-card hidden">
-          <div class="liquid-layer" id="resultsLiquidLayer"></div>
+        <section
+          id="resultsSection"
+          class="bento-card bento-card--wide result-card hidden"
+        >
           <div class="card-content">
             <div class="word-header">
               <div class="word-meta">
@@ -148,13 +130,13 @@
         </section>
 
         <!-- History -->
-        <section id="historySection" class="glass-card history-favorites-card">
+        <section id="historySection" class="bento-card bento-card--narrow">
           <div class="card-content">
             <h3 class="section-title">
-              <svg class="icon icon--lg" aria-hidden="true">
+              <svg class="icon" aria-hidden="true">
                 <use href="./assets/sprite-D5Sq9OM_.svg#icon-clock"></use>
               </svg>
-              Recent Searches
+              Recent
             </h3>
             <div id="historyList" class="history-grid">
               <p class="text-muted">Your history will appear here.</p>
@@ -163,13 +145,10 @@
         </section>
 
         <!-- Favorites -->
-        <section
-          id="favoritesSection"
-          class="glass-card history-favorites-card"
-        >
+        <section id="favoritesSection" class="bento-card bento-card--narrow">
           <div class="card-content">
             <h3 class="section-title">
-              <svg class="icon icon--lg" aria-hidden="true">
+              <svg class="icon" aria-hidden="true">
                 <use href="./assets/sprite-D5Sq9OM_.svg#icon-star-solid"></use>
               </svg>
               Favorites
